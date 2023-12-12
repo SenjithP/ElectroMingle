@@ -3,6 +3,7 @@ import Electrician from "../../models/electricianSchema.js";
 import Shop from "../../models/shopSchema.js";
 import Comment from "../../models/Posts/commentSchema.js";
 import jwt from "jsonwebtoken";
+import SavePost from "../../models/Posts/savePostSchema.js";
 
 export const createPost = async (req, res) => {
   try {
@@ -141,7 +142,7 @@ export const commentPost = async (req, res) => {
 export const getCommentPost = async (req, res) => {
   try {
     const postId = req.query.id;
-    const postComments = await Comment.find({postId:postId}).populate(
+    const postComments = await Comment.find({ postId: postId }).populate(
       "electricianId"
     );
     res.status(200).json(postComments);
@@ -173,5 +174,126 @@ export const replyPostComment = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(404).json({ message: error.message });
+  }
+};
+
+export const savePost = async (req, res) => {
+  try {
+    const { postId, electricianId, shopId } = req.body;
+
+    // Check if electricianId and postId combination exists
+    const existingSavePost = await SavePost.findOne({ electricianId, postId });
+
+    if (existingSavePost) {
+      return res.status(200).json({ message: "Post already saved." });
+    } else {
+      // If electricianId and postId combination doesn't exist, create a new document
+      const savePostData = {
+        electricianId: electricianId,
+        postId: postId,
+        // Add other properties as needed
+      };
+
+      const savedPost = new SavePost(savePostData);
+      await savedPost.save();
+      return res.status(200).json({ message: "Post saved successfully." });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: error.message });
+  }
+};
+
+export const getSavedPosts = async (req, res) => {
+  try {
+    // Validate that the required parameter 'id' is provided in the query
+    const electricianId = req.query.id;
+    if (!electricianId) {
+      return res.status(400).json({
+        message: "Electrician ID is required in the query parameters.",
+      });
+    }
+
+    const allElectriciansSavedPosts = await SavePost.find({
+      electricianId,
+    }).populate({
+      path: "postId",
+      populate: {
+        path: "electricianId",
+        model: Electrician, // Replace with the actual model name for Electrician
+      },
+    });
+
+    // If electrician's saved posts found, return them
+    if (allElectriciansSavedPosts && allElectriciansSavedPosts.length > 0) {
+      const reversedPosts = allElectriciansSavedPosts.reverse();
+      return res.status(200).json({allElectriciansSavedPosts: reversedPosts });
+    }
+
+    // If no electrician's saved posts found, check for shop's saved posts
+
+    // Validate that the required parameter 'id' is provided in the query for shops
+    const shopId = req.query.id;
+    if (!shopId) {
+      return res
+        .status(400)
+        .json({ message: "Shop ID is required in the query parameters." });
+    }
+
+    const allShopsSavedPosts = await SavePost.find({ shopId });
+
+    // If shops saved posts found, return them
+    if (allShopsSavedPosts && allShopsSavedPosts.length > 0) {
+      const reversedPosts = allShopsSavedPosts.reverse();
+
+      return res.status(200).json({ allShopsSavedPosts:reversedPosts });
+    }
+
+    // If no saved posts found for either electrician or shop
+    return res.status(404).json({
+      message: "No saved posts found for the specified user or shop.",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const getMyPosts = async (req, res) => {
+  try {
+    // Validate the presence of 'id' in the query parameters
+    const userId = req.query.id;
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ message: "User ID is required in the query parameters." });
+    }
+
+    // Find electrician's posts based on the provided user ID
+    const electriciansMyPost = await Post.find({ electricianId: userId }).populate("electricianId");
+
+    // Find shop's posts based on the provided user ID
+    const shopMyPost = await Post.find({ shopId: userId }).populate("shopId");;
+
+    // If electrician's saved posts found, return them
+    if (electriciansMyPost && electriciansMyPost.length > 0) {
+      const reversedPosts = electriciansMyPost.reverse();
+      return res.status(200).json({ electriciansMyPost:reversedPosts });
+    }
+
+    // If shops saved posts found, return them
+    if (shopMyPost && shopMyPost.length > 0) {
+      const reversedPosts = shopMyPost.reverse();
+
+      return res.status(200).json({ shopMyPost:reversedPosts });
+    }
+
+    // If no posts found for either electrician or shop
+    return res
+      .status(404)
+      .json({ message: "No posts found for the provided user ID." });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };

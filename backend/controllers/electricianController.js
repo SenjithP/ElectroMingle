@@ -135,3 +135,20 @@ export const updateElectricianProfile = async (req, res) => {
     res.status(500).json({ message: "An error occurred during updation." });
   }
 };
+
+export const getElectricianDetails = async (req, res) => {
+  try {
+    
+    const data = await Electrician.findById(req.query.id);
+    if (!data) {
+      res
+        .status(500)
+        .json({ message: "An error occurred during fetcing data." });
+    } else {
+      res.status(200).json({ data });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "An error occurred during fetcing data." });
+  }
+};

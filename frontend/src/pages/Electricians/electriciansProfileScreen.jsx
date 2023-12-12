@@ -165,7 +165,7 @@ const ElectriciansProfileScreen = () => {
                     type="text"
                     placeholder="Enter Your State"
                     name="electricianState"
-                    value={formData.electricianLocation?.electricianState}
+                    value={formData?.electricianLocation?.electricianState}
                     onChange={handleInputChange}
                     className="my-2 w-full px-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-buttonColor text-[16px] leading-7 text-black placeholder:text-gray rounded-md cursor-pointer mb-3 md:mb-0"
                     required

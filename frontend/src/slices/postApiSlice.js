@@ -25,7 +25,7 @@ export const postApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     electricianCommentPost: builder.mutation({
-      query: (data) => ({      
+      query: (data) => ({
         url: `${POST_URL}/electrician/comment-post`,
         method: "POST",
         body: data,
@@ -37,7 +37,25 @@ export const postApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
-    
+    saveElectricianPost: builder.mutation({
+      query: (data) => ({
+        url: `${POST_URL}/electrician/save-posts`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getSavedPosts: builder.mutation({
+      query: (params) => ({
+        url: `${POST_URL}/electrician/get-saved-post?id=${params.id}`,
+        method: "GET",
+      }),
+    }),
+    getMyPosts: builder.mutation({
+      query: (params) => ({
+        url: `${POST_URL}/electrician/get-my-post?id=${params.id}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -46,5 +64,8 @@ export const {
   useElectricianViewPostsMutation,
   useElectricianLikePostMutation,
   useElectricianCommentPostMutation,
-  useElectricianGetCommentPostMutation
+  useElectricianGetCommentPostMutation,
+  useSaveElectricianPostMutation,
+  useGetSavedPostsMutation,
+  useGetMyPostsMutation,
 } = postApiSlice;

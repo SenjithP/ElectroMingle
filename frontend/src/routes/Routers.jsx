@@ -12,6 +12,8 @@ import ElectricianLogin from "../pages/Login/electricianLogin";
 import ShopLogin from "../pages/Login/shopLogin";
 import ElectricianSideScheduledWorksScreen from "../pages/Electricians/electricianSideScheduledWorksScreen";
 import Chat from "../pages/Chat/Chat";
+import SavedPosts from "../pages/Electricians/savedPosts";
+import MyPosts from "../pages/Electricians/myPosts";
 
 const Routers = () => {
   return (
@@ -35,6 +37,8 @@ const Routers = () => {
       <Route path="/electricianSideScheduledWorks" element={<ElectricianSideScheduledWorksScreen />} />
 
       <Route path="/clientElectricianChat" element={<Chat/>}/>
+      <Route path="/electricianSavedPost" element={<SavedPosts/>}/>
+      <Route path="/electricianMyPost" element={<MyPosts/>}/>
     </Routes>
   );
 };

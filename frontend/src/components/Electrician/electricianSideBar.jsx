@@ -1,35 +1,51 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import coverPhoto from "../../assets/images/coverPhoto.png";
 import profilePhoto from "../../assets/images/elecProfile.jpg";
 import { LuCalendarClock } from "react-icons/lu";
 import { VscFileMedia } from "react-icons/vsc";
-import { TiMessages } from "react-icons/ti";
 import { GrSchedules } from "react-icons/gr";
 import { MdJoinInner } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
+import { CiSaveDown1 } from "react-icons/ci";
+import { useGetSidebarElecticianDetailsMutation } from "../../slices/electriciansApiSlice";
+import { useSelector } from "react-redux";
+import { RiAlarmWarningFill } from "react-icons/ri";
 
 const ElectricianSideBar = () => {
+  const { electricianInfo } = useSelector((state) => state.auth);
+
   const location = useLocation();
 
   const sideBarItems = useMemo(
     () => [
       { text: "FEEDS", letterIcons: LuCalendarClock, path: "/electricianHome" },
-      { text: "YOUR POSTS", letterIcons: VscFileMedia, path: "/yourPosts" },
+      {
+        text: "YOUR POSTS",
+        letterIcons: VscFileMedia,
+        path: "/electricianMyPost",
+      },
       {
         text: "SCHEDULES",
         letterIcons: GrSchedules,
         path: "/electricianSideScheduledWorks",
       },
       { text: "MEETING", letterIcons: MdJoinInner, path: "/meeting" },
-      { text: "MESSAGES", letterIcons: TiMessages, path: "/messages" },
+
+      {
+        text: "SAVED",
+        letterIcons: CiSaveDown1,
+        path: "/electricianSavedPost",
+      },
       { text: "PROFILE", letterIcons: CgProfile, path: "/electricianProfile" },
     ],
     []
   );
 
   const [selectedLetter, setSelectedLetter] = useState(0);
-
+  const [getSidebarElecticianDetails] =
+    useGetSidebarElecticianDetailsMutation();
+  const [sidebarElecticianDetails, setSidebarElecticianDetails] = useState([]);
   useEffect(() => {
     const index = sideBarItems.findIndex(
       (letter) => location.pathname === letter.path
@@ -38,7 +54,25 @@ const ElectricianSideBar = () => {
       setSelectedLetter(index);
     }
   }, [location.pathname, sideBarItems]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const sidebarElectricianDetail = await getSidebarElecticianDetails({
+          id: electricianInfo._id,
+        });
+        if (sidebarElectricianDetail.data) {
+          setSidebarElecticianDetails(sidebarElectricianDetail.data);
+        } else {
+          console.error("Error fetching data");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
+    fetchData(); // Call the async function
+  }, [getSidebarElecticianDetails]);
+  console.log(sidebarElecticianDetails.data, "sidebarElecticianDetails");
   return (
     <>
       <div className="hidden  lg:block md:w-1/2 lg:w-1/4 relative rounded-lg overflow-hidden m-5 md:shadow-md text-center max-h-screen overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-gray-300">
@@ -57,22 +91,52 @@ const ElectricianSideBar = () => {
           />
         </div>
         <div className="max-h-400px bg-blue-50 p-4">
-          <div className="mt-[100px]">
-            <h1 className="text-[30px] font-bold mb-2">Robert</h1>
-            <div className="flex justify-around">
-              <h3 className="text-[20px] text-gray-800 mb-2">9074005258</h3>
-              <h3 className="text-[20px] text-gray-800 mb-2">
-                Thrissur, Kerala
-              </h3>
+          {sidebarElecticianDetails.data?.description ===
+          "No description provided" ? (
+            <div className="mt-[100px]">
+              <h1 className="text-[30px] font-bold mb-2">
+                {sidebarElecticianDetails.data.electricianName}
+              </h1>
+              <div className="flex justify-around">
+                <h3 className="text-[20px] text-gray-800 mb-2">
+                  {sidebarElecticianDetails.data.electricianMobileNumber}
+                </h3>
+                <h3 className="text-[20px] text-gray-800 mb-2">
+                  {
+                    sidebarElecticianDetails.data.electricianLocation
+                      ?.electricianState
+                  }
+                  ,{" "}
+                  {
+                    sidebarElecticianDetails.data.electricianLocation
+                      ?.electricianLocality
+                  }
+                </h3>
+              </div>
+              <p className="text-[16px] text-gray-700 text-justify">
+                {sidebarElecticianDetails.data.electricianDescription}
+              </p>
             </div>
-            <p className="text-[16px] text-gray-700 text-justify">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Rem
-              assumenda facere culpa quaerat! Velit sunt excepturi, quibusdam
-              dolores blanditiis ad esse eius reprehenderit a harum, maxime id
-              cupiditate cum sed?
-            </p>
-          </div>
+          ) : (
+            <div className="mt-[100px]">
+              <h1 className="text-[30px] font-bold mb-2">
+                {sidebarElecticianDetails.data?.electricianName}
+              </h1>
+              <div className="update-profile-warning">
+                <h2 className="text-[20px] inline-block">
+                  Please Update Your Profile First
+                </h2>
+                <RiAlarmWarningFill className="text-red-500 inline-block text-2xl ml-2 animate-bounce" />
+
+<br/>
+                <Link className="text-blue-500 font-medium ml-1" to={"/electricianProfile"}>
+                click here
+              </Link>
+              </div>
+            </div>
+          )}
         </div>
+
         <div className="bg-profileColor flex flex-col items-center pt-5 md:shadow-inner">
           {sideBarItems.map(({ text, letterIcons, path }, index) => (
             <NavLink

@@ -1,5 +1,5 @@
 import express from "express";
-import { createPost, viewPost,likePost,commentPost,replyPostComment,getCommentPost } from "../controllers/Posts/postController.js";
+import { createPost, viewPost,likePost,commentPost,replyPostComment,getCommentPost,savePost,getSavedPosts,getMyPosts } from "../controllers/Posts/postController.js";
 import { upload } from "../utils/multer.js";
 
 const postRouter = express.Router();
@@ -11,4 +11,8 @@ postRouter.post("reply-comment/:id",replyPostComment)
  
 postRouter.get("/electrician/get-post-comments",getCommentPost)                              
 postRouter.post("/electrician/comment-post",commentPost)
+postRouter.post("/electrician/save-posts",savePost)
+
+postRouter.get("/electrician/get-saved-post",getSavedPosts)
+postRouter.get("/electrician/get-my-post",getMyPosts)
 export default postRouter;

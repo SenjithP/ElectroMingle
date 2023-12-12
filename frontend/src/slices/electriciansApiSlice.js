@@ -30,7 +30,13 @@ export const elecriciansApiSlice = apiSlice.injectEndpoints({
                 body:data
             })
         }),
+        getSidebarElecticianDetails:builder.mutation({
+            query:(query)=>({
+                url:`${ELECTRICIANS_URL}/getElectricianDetails?id=${query.id}`,
+                method:'GET',
+            })
+        }),
     })
 })
 
-export const {useUpdateElectricianProfileMutation, useGetDataToUpdateElectricianProfileMutation, useGetClientScheduledWorksMutation, useChangeWorkStatusMutation} = elecriciansApiSlice;
+export const {useUpdateElectricianProfileMutation, useGetDataToUpdateElectricianProfileMutation, useGetClientScheduledWorksMutation, useChangeWorkStatusMutation,useGetSidebarElecticianDetailsMutation} = elecriciansApiSlice;
