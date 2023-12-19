@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import coverPhoto from "../../assets/images/coverPhoto.png";
-import profilePhoto from "../../assets/images/elecProfile.jpg";
 import { LuCalendarClock } from "react-icons/lu";
 import { VscFileMedia } from "react-icons/vsc";
 import { GrSchedules } from "react-icons/gr";
@@ -11,10 +10,12 @@ import { CiSaveDown1 } from "react-icons/ci";
 import { useGetSidebarElecticianDetailsMutation } from "../../slices/electriciansApiSlice";
 import { useSelector } from "react-redux";
 import { RiAlarmWarningFill } from "react-icons/ri";
+import { ELECTRICIAN_PROFILE_IMAGE_DIR_PATH } from "../../urls";
+import profilePic from "../../assets/images/elecProfile.png";
 
-const ElectricianSideBar = () => {
+const ElectricianSideBar = ({ count }) => {
   const { electricianInfo } = useSelector((state) => state.auth);
-
+  console.log(count);
   const location = useLocation();
 
   const sideBarItems = useMemo(
@@ -54,6 +55,8 @@ const ElectricianSideBar = () => {
       setSelectedLetter(index);
     }
   }, [location.pathname, sideBarItems]);
+  console.log(electricianInfo._id, "idddS");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -71,8 +74,8 @@ const ElectricianSideBar = () => {
     };
 
     fetchData(); // Call the async function
-  }, [getSidebarElecticianDetails]);
-  console.log(sidebarElecticianDetails.data, "sidebarElecticianDetails");
+  }, [count, getSidebarElecticianDetails]);
+  console.log(sidebarElecticianDetails, "sidebarElecticianDetails");
   return (
     <>
       <div className="hidden  lg:block md:w-1/2 lg:w-1/4 relative rounded-lg overflow-hidden m-5 md:shadow-md text-center max-h-screen overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-gray-300">
@@ -84,15 +87,29 @@ const ElectricianSideBar = () => {
           />
         </div>
         <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-4 border-white rounded-full overflow-hidden w-[200px] h-[200px]">
+         {sidebarElecticianDetails.data?.electricianProfileImage !== "default-image.jpg"?(
           <img
-            src={profilePhoto}
+            src={
+              
+                 ELECTRICIAN_PROFILE_IMAGE_DIR_PATH +
+                  sidebarElecticianDetails.data?.electricianProfileImage
+              
+            }
             alt="Profile Photo"
             className="w-full h-full object-cover rounded-full"
           />
+         ):(
+          <img
+            src={profilePic}
+            alt="Profile Photo"
+            className="w-full h-full object-cover rounded-full"
+          />
+         )}
+         
+          
         </div>
         <div className="max-h-400px bg-blue-50 p-4">
-          {sidebarElecticianDetails.data?.description ===
-          "No description provided" ? (
+          {sidebarElecticianDetails.data?.electricianIsVerified ? (
             <div className="mt-[100px]">
               <h1 className="text-[30px] font-bold mb-2">
                 {sidebarElecticianDetails.data.electricianName}
@@ -103,8 +120,8 @@ const ElectricianSideBar = () => {
                 </h3>
                 <h3 className="text-[20px] text-gray-800 mb-2">
                   {
-                    sidebarElecticianDetails.data.electricianLocation
-                      ?.electricianState
+                    sidebarElecticianDetails.data?.electricianLocation
+                      .electricianState
                   }
                   ,{" "}
                   {
@@ -128,10 +145,13 @@ const ElectricianSideBar = () => {
                 </h2>
                 <RiAlarmWarningFill className="text-red-500 inline-block text-2xl ml-2 animate-bounce" />
 
-<br/>
-                <Link className="text-blue-500 font-medium ml-1" to={"/electricianProfile"}>
-                click here
-              </Link>
+                <br />
+                <Link
+                  className="text-blue-500 font-medium ml-1"
+                  to={"/electricianProfile"}
+                >
+                  click here
+                </Link>
               </div>
             </div>
           )}

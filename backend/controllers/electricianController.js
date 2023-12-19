@@ -81,64 +81,110 @@ export const getDataToUpdateElectricianProfile = async (req, res) => {
 
 export const updateElectricianProfile = async (req, res) => {
   try {
-    const electricianData = await Electrician.findOne({
-      _id: req.body.electricianId,
-    });
-    if (!electricianData) {
-      console.log("Electrician not found");
-      return res.status(400).json({ error: "Electrician not found" });
+    const {
+      electricianId,
+      electricianName,
+      electricianEmail,
+      electricianState,
+      electricianLocality,
+      electricianDescription,
+      electricianWagePerDay,
+      electricianWagePerHour,
+      electricianLicenseNumber,
+    } = req.body;
+
+    const images = req.files.map((file) => file.filename);
+
+    const existingElectrician = await Electrician.findById(electricianId);
+
+    if (!existingElectrician) {
+      return res.status(404).json({ error: "Electrician not found" });
     }
-    const updateFields = [
-      "electricianName",
-      "electricianEmail",
-      "electricianLocation.electricianState",
-      "electricianLocation.electricianLocality",
-      "electricianDescription",
-      "electricianWage.electricianWagePerDay",
-      "electricianWage.electricianWagePerHour",
-      "electricianCertificate.electricianLicenseImage",
-      "electricianCertificate.electricianLicenseNumber",
-      "electricianProfileImage",
-    ];
-    updateFields.forEach((field) => {
-      const value = req.body[field];
-      if (value !== undefined) {
-        const nestedFields = field.split(".");
-        let target = electricianData;
-        for (let i = 0; i < nestedFields.length - 1; i++) {
-          target = target[nestedFields[i]];
-        }
-        target[nestedFields.pop()] = value;
-      }
-    });
-    // Update the password if it exists in the request body
-    if (req.body.electricianPassword !== undefined) {
-      const salt = await bcrypt.genSalt(10);
-      electricianData.electricianPassword = await bcrypt.hash(
-        req.body.electricianPassword,
-        salt
-      );
+
+    if (electricianName  && electricianName !== "undefined") {
+      existingElectrician.electricianName = electricianName;
+    } else {
+      existingElectrician.electricianName = existingElectrician.electricianName;
     }
-    const updatedElectricianData = await electricianData.save();
-    const responseData = updateFields.reduce((data, field) => {
-      const nestedFields = field.split(".");
-      data[nestedFields[nestedFields.length - 1]] =
-        nestedFields.reduce(
-          (obj, key) => obj && obj[key],
-          updatedElectricianData
-        ) || updatedElectricianData[field];
-      return data;
-    }, {});
-    res.status(200).json(responseData);
+
+    if (electricianEmail && electricianEmail !== "undefined") {
+      existingElectrician.electricianEmail = electricianEmail;
+    } else {
+      existingElectrician.electricianEmail =
+        existingElectrician.electricianEmail;
+    }
+
+    if (electricianState && electricianState!== "undefined") {
+      existingElectrician.electricianLocation.electricianState =
+        electricianState;
+    } else {
+      existingElectrician.electricianLocation.electricianState =
+        existingElectrician.electricianLocation.electricianState;
+    }
+
+    if (electricianLocality && electricianLocality !== "undefined") {
+      existingElectrician.electricianLocation.electricianLocality =
+        electricianLocality;
+    } else {
+      existingElectrician.electricianLocation.electricianLocality =
+        existingElectrician.electricianLocation.electricianLocality;
+    }
+
+    if (electricianDescription && electricianDescription !== "undefined") {
+      existingElectrician.electricianDescription = electricianDescription;
+    } else {
+      existingElectrician.electricianDescription =
+        existingElectrician.electricianDescription;
+    }
+
+    if (electricianWagePerDay && !isNaN(Number(electricianWagePerDay))) {
+      existingElectrician.electricianWage.electricianWagePerDay =
+        electricianWagePerDay;
+    } else {
+      existingElectrician.electricianWage.electricianWagePerDay =
+        existingElectrician.electricianWage.electricianWagePerDay;
+    }
+
+    if (electricianWagePerHour&& !isNaN(Number(electricianWagePerHour))) {
+      existingElectrician.electricianWage.electricianWagePerHour =
+        electricianWagePerHour;
+    } else {
+      existingElectrician.electricianWage.electricianWagePerHour =
+        existingElectrician.electricianWage.electricianWagePerHour;
+    }
+
+    if (electricianLicenseNumber && electricianLicenseNumber !== "undefined") {
+      existingElectrician.electricianCertificate.electricianLicenseNumber =
+        electricianLicenseNumber;
+    } else {
+      existingElectrician.electricianCertificate.electricianLicenseNumber =
+        existingElectrician.electricianCertificate.electricianLicenseNumber;
+    }
+
+    if (images&& images.length > 0) {
+      existingElectrician.electricianProfileImage = images[0];
+    } else {
+      existingElectrician.electricianProfileImage =
+        existingElectrician.electricianProfileImage;
+    }
+
+    existingElectrician.electricianIsVerified = true
+
+    const updatedElectrician = await existingElectrician.save();
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      updatedData: updatedElectrician,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "An error occurred during updation." });
   }
 };
 
+
 export const getElectricianDetails = async (req, res) => {
   try {
-    
     const data = await Electrician.findById(req.query.id);
     if (!data) {
       res

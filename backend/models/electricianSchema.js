@@ -61,7 +61,6 @@ const electricianSchema = new mongoose.Schema(
     },
     electricianProfileImage: {
       type: String,
-      required: true,
       default: "default-image.jpg", // Provide a default image path here
     },
     electricianCertificate: {

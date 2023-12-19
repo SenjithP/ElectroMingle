@@ -187,7 +187,7 @@ const ListElectricians = () => {
                         </span>
                         <span className="flex gap-2 items-center first-letter">
                           <GrLocation />
-                          {electrician.electricianLocation.electricianLocality},
+                          {electrician.electricianLocation.electricianLocality},<br/>
                           {electrician.electricianLocation.electricianState}
                         </span>
                       </Typography>

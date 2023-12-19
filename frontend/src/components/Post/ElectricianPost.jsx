@@ -11,7 +11,6 @@ import {
   useSaveElectricianPostMutation,
 } from "../../slices/postApiSlice";
 import { useSelector } from "react-redux";
-const ELECTRICIAN_POSTS_DIR_PATH = "http://localhost:8080/postImagesAndVideos/";
 import { AiFillLike } from "react-icons/ai";
 import Swal from "sweetalert2";
 import { FaRegCommentDots } from "react-icons/fa";
@@ -19,6 +18,7 @@ import { CiSaveDown2 } from "react-icons/ci";
 import InputEmoji from "react-input-emoji";
 import { toast } from "react-toastify";
 import { BsReply } from "react-icons/bs";
+import { ELECTRICIAN_POSTS_DIR_PATH } from "../../urls";
 
 const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
   const [count, setCount] = useState(0);
@@ -393,7 +393,7 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                           <p className="text-ascent-2 text-justify">
                             {comments.comment}
                           </p>
-                          <div className="mt-2 flex gap-6">
+                          {/* <div className="mt-2 flex gap-6">
                             <div
                               className="text-xs cursor-pointer flex gap-2"
                               onClick={handleLikeClick}
@@ -405,7 +405,7 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                               <BsReply />
                               <p onClick={handleReplyCommentClick}>REPLY</p>
                             </div>
-                          </div>
+                          </div> */}
 
                           {replyComments && (
                             <div className="flex items-center gap-4 border-t border-gray-300 pt-4">
