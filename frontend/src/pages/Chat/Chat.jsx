@@ -8,7 +8,7 @@ import { io } from "socket.io-client";
 import {
   useGetUserMutation,
   useUserChatsMutation,
-} from "../../slices/chatSlice";
+} from "../../slices/chatApiSlice";
 
 const Chat = () => {
   const socket = useRef();

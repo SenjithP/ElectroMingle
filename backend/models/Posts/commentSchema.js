@@ -22,7 +22,6 @@ const commentSchema = new mongoose.Schema(
     },
     replies: [
       {
-        rid: { type: mongoose.Schema.Types.ObjectId },
         electricianId: {
           type: Schema.Types.ObjectId,
           ref: "Electrician",
@@ -33,8 +32,6 @@ const commentSchema = new mongoose.Schema(
           ref: "Shop",
           default: null,
         },
-        from: { type: String },
-        replyAt: { type: String },
         comment: { type: String },
         created_At: { type: Date, default: Date.now },
         updated_At: { type: Date, default: Date.now },

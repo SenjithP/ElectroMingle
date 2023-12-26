@@ -115,8 +115,6 @@ export const likePost = async (req, res) => {
 export const commentPost = async (req, res) => {
   try {
     const { description, electricianCommentId, postId } = req.body;
-
-    console.log(req.body);
     if (description === null) {
       return res.status(404).json({ message: "Comment is required" });
     }
@@ -152,22 +150,65 @@ export const getCommentPost = async (req, res) => {
   }
 };
 
-export const replyPostComment = async (req, res) => {
-  const { userId } = req.body.user;
-  const { comment, replyAt, from } = req.body;
-  const { id } = req.params;
+export const likePostComment = async (req, res) => {
+  try {
+    const token = req.cookies.electricianjwt;
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized - Missing JWT" });
+    }
 
-  if (comment === null) {
+    const decodedToken = jwt.verify(token, process.env.ELECTRICIAN_JWT_SECRET);
+
+    const commentId = req.body.commentId;
+    const electricianId = decodedToken.userId;
+    const electricianDetails = await Electrician.findById(electricianId);
+    const electricianName = electricianDetails.electricianName;
+    if (!commentId) {
+      return res.status(400).json({ error: "commentId is required" });
+    }
+
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ error: "comment not found" });
+    }
+
+    // Check if the electrician has already liked the post
+    const likedIndex = comment.likes.findIndex((like) =>
+      like.includes(electricianId)
+    );
+
+    if (likedIndex === -1) {
+      // If not liked, like the post
+      comment.likes.push(electricianId + electricianName);
+      await comment.save();
+      res.status(200).json({
+        message: "comment liked successfully",
+      });
+    } else {
+      // If already liked, unlike the post
+      comment.likes.splice(likedIndex, 1);
+      await comment.save();
+      res.status(200).json({
+        message: "comment unliked successfully",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const replyPostComment = async (req, res) => {
+  const { electricianCommentId, commentId, replyComment } = req.body;
+
+  if (!replyComment || replyComment.trim().length === 0) {
     res.status(404).json({ message: "Comment is required." });
   }
   try {
-    const commentInfo = await Comment.findById(id);
+    const commentInfo = await Comment.findById(commentId);
     commentInfo.replies.push({
-      comment,
-      replyAt,
-      from,
-      userId,
-      created_At: Date.now(),
+      electricianId:electricianCommentId,
+      comment: replyComment,
     });
     commentInfo.save();
     res.status(200).json(commentInfo);
@@ -227,7 +268,7 @@ export const getSavedPosts = async (req, res) => {
     // If electrician's saved posts found, return them
     if (allElectriciansSavedPosts && allElectriciansSavedPosts.length > 0) {
       const reversedPosts = allElectriciansSavedPosts.reverse();
-      return res.status(200).json({allElectriciansSavedPosts: reversedPosts });
+      return res.status(200).json({ allElectriciansSavedPosts: reversedPosts });
     }
 
     // If no electrician's saved posts found, check for shop's saved posts
@@ -246,7 +287,7 @@ export const getSavedPosts = async (req, res) => {
     if (allShopsSavedPosts && allShopsSavedPosts.length > 0) {
       const reversedPosts = allShopsSavedPosts.reverse();
 
-      return res.status(200).json({ allShopsSavedPosts:reversedPosts });
+      return res.status(200).json({ allShopsSavedPosts: reversedPosts });
     }
 
     // If no saved posts found for either electrician or shop
@@ -270,22 +311,24 @@ export const getMyPosts = async (req, res) => {
     }
 
     // Find electrician's posts based on the provided user ID
-    const electriciansMyPost = await Post.find({ electricianId: userId }).populate("electricianId");
+    const electriciansMyPost = await Post.find({
+      electricianId: userId,
+    }).populate("electricianId");
 
     // Find shop's posts based on the provided user ID
-    const shopMyPost = await Post.find({ shopId: userId }).populate("shopId");;
+    const shopMyPost = await Post.find({ shopId: userId }).populate("shopId");
 
     // If electrician's saved posts found, return them
     if (electriciansMyPost && electriciansMyPost.length > 0) {
       const reversedPosts = electriciansMyPost.reverse();
-      return res.status(200).json({ electriciansMyPost:reversedPosts });
+      return res.status(200).json({ electriciansMyPost: reversedPosts });
     }
 
     // If shops saved posts found, return them
     if (shopMyPost && shopMyPost.length > 0) {
       const reversedPosts = shopMyPost.reverse();
 
-      return res.status(200).json({ shopMyPost:reversedPosts });
+      return res.status(200).json({ shopMyPost: reversedPosts });
     }
 
     // If no posts found for either electrician or shop

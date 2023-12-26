@@ -7,7 +7,7 @@ import {
   useAddMessagesMutation,
   useGetMessagesMutation,
   useGetUserMutation,
-} from "../../slices/chatSlice";
+} from "../../slices/chatApiSlice";
 
 const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
   const [getMessages] = useGetMessagesMutation();

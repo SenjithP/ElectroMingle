@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import registerImg from "../assets/images/register.jpg";
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useState } from "react";
 import { useRegisterMutation } from "../slices/authApiSlice";
 import { toast } from "react-toastify";
 import Header from "../components/Header/Header";

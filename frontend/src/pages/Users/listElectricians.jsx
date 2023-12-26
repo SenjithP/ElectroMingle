@@ -11,7 +11,7 @@ import { useGetElectriciansDetailsMutation } from "../../slices/clientsApiSlice"
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ClientHeader from "../../components/Header/clientHeader";
-import { useCreateChatMutation } from "../../slices/chatSlice";
+import { useCreateChatMutation } from "../../slices/chatApiSlice";
 import { useSelector } from "react-redux";
 
 const ListElectricians = () => {

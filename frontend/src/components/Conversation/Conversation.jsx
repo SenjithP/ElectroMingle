@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useGetUserMutation } from "../../slices/chatSlice";
+import { useGetUserMutation } from "../../slices/chatApiSlice";
 
 const Conversation = ({ data, currentUser, online }) => {
   const [getUser] = useGetUserMutation();

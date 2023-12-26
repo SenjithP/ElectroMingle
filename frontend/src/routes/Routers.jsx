@@ -14,6 +14,9 @@ import ElectricianSideScheduledWorksScreen from "../pages/Electricians/electrici
 import Chat from "../pages/Chat/Chat";
 import SavedPosts from "../pages/Electricians/savedPosts";
 import MyPosts from "../pages/Electricians/myPosts";
+import MeetingHome from "../pages/Meeting/MeetingHome"
+import MeetingCall from "../pages/Meeting/MeetingCall";
+import NoMatch from "../components/Meeting/NoMatch";
 
 const Routers = () => {
   return (
@@ -39,6 +42,10 @@ const Routers = () => {
       <Route path="/clientElectricianChat" element={<Chat/>}/>
       <Route path="/electricianSavedPost" element={<SavedPosts/>}/>
       <Route path="/electricianMyPost" element={<MyPosts/>}/>
+
+      <Route path="/MeetingHome" element={<MeetingHome />} />
+      <Route path="/Meeting/:id" element={<MeetingCall />} />
+      <Route path="*" element={<NoMatch/>}/>
     </Routes>
   );
 };

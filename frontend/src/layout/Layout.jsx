@@ -6,13 +6,14 @@ const Layout = () => {
   const location = useLocation();
   const isElectricianHome = location.pathname.endsWith('/electricianHome');
   const isClientElectricianChat = location.pathname.endsWith('/clientElectricianChat');
+  const meetingCall = location.pathname.includes('/Meeting/');
 
   return (
     <>
       <main>
         <Routers />
       </main>
-      {!(isElectricianHome || isClientElectricianChat) && <Footer />}
+      {!(isElectricianHome || isClientElectricianChat || meetingCall) && <Footer />}
     </>
   );
 };

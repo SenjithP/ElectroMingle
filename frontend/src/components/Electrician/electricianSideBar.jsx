@@ -47,7 +47,7 @@ const ElectricianSideBar = ({ count }) => {
   const [getSidebarElecticianDetails] =
     useGetSidebarElecticianDetailsMutation();
   const [sidebarElecticianDetails, setSidebarElecticianDetails] = useState([]);
-  useEffect(() => {
+  useEffect(() => { 
     const index = sideBarItems.findIndex(
       (letter) => location.pathname === letter.path
     );

@@ -7,8 +7,10 @@ import "slick-carousel/slick/slick-theme.css";
 import {
   useElectricianCommentPostMutation,
   useElectricianGetCommentPostMutation,
+  useElectricianLikeCommentMutation,
   useElectricianLikePostMutation,
   useSaveElectricianPostMutation,
+  useReplyCommentPostMutation,
 } from "../../slices/postApiSlice";
 import { useSelector } from "react-redux";
 import { AiFillLike } from "react-icons/ai";
@@ -44,8 +46,10 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
   };
   const { electricianInfo } = useSelector((state) => state.auth);
   const [showCommentsMap, setShowCommentsMap] = useState({});
+  const [showRepliesMap, setShowRepliesMap] = useState({});
   const [postComment, setPostComment] = useState([]);
-
+  const [replyInputStates, setReplyInputStates] = useState({});
+  console.log(postComment, "this is the post comment");
   const [
     postIdSentToBackEndGetCorrespondingComments,
     setPostIdSentToBackEndGetCorrespondingComments,
@@ -54,18 +58,28 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
   const [formData, setFormData] = useState({
     description: "",
   });
+  const [replyFormData, setReplyFormData] = useState({
+    replyComment: "",
+  });
   const [commentClicked, setCommentClicked] = useState(false);
   const [commentPost] = useElectricianCommentPostMutation();
   const [replyComments, setReplyComments] = useState(false);
   const [showRepliedComment, setShowRepliedComment] = useState(false);
-  const [likePost] = useElectricianLikePostMutation();
-  const [saveElectricianPost] = useSaveElectricianPostMutation()
+  const [electricianLikePost] = useElectricianLikePostMutation();
+  const [electricianLikeComment] = useElectricianLikeCommentMutation();
+  const [saveElectricianPost] = useSaveElectricianPostMutation();
 
   const [electricianGetCommentPost] = useElectricianGetCommentPostMutation();
+  const [replyCommentPost] = useReplyCommentPostMutation();
 
   const handleLikeButtonClick = async (postId) => {
-    await likePost({ postId }).unwrap();
+    await electricianLikePost({ postId }).unwrap();
     setCount((prevCount) => prevCount + 1);
+  };
+
+  const handleCommentLikeButtonClick = async (commentId) => {
+    await electricianLikeComment({ commentId }).unwrap();
+    setCommentClicked(true);
   };
 
   const handleLikeClick = async (postId) => {
@@ -87,6 +101,43 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
     // Check if there are no likes
     if (likedBy.length === 0) {
       likedBy.push("No One Likes This Post, Be The First To Like This Post");
+    }
+
+    // Build HTML content for Swal
+    const likedByContent = likedBy
+      .map((item, index) => `<li key=${index}>${item}</li>`)
+      .join("");
+
+    // Display the list using Swal
+    Swal.fire({
+      title: "Liked By",
+      html: `<ul>${likedByContent}</ul>`,
+      showCloseButton: true,
+      focusConfirm: false,
+    });
+  };
+
+  const handleCommentLikeClick = async (commentId) => {
+    // Find the comment with the given postId
+    const comment = postComment.find((item) => item._id === commentId);
+
+    // Check if the comment exists
+    if (!comment) {
+      Swal.fire({
+        title: "Error",
+        text: "comment not found",
+        icon: "error",
+      });
+      return;
+    }
+
+    let likedBy = comment.likes.map((item) => item.slice(24));
+
+    // Check if there are no likes
+    if (likedBy.length === 0) {
+      likedBy.push(
+        "No One Likes This comment, Be The First To Like This comment"
+      );
     }
 
     // Build HTML content for Swal
@@ -129,12 +180,9 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
 
   const commentSubmitHandler = async (e, postId) => {
     e.preventDefault();
-    console.log(postId);
     const { description } = formData;
-    console.log(description);
     try {
       const electricianCommentId = electricianInfo._id;
-      console.log(electricianCommentId);
       const result = await commentPost({
         postId,
         description,
@@ -155,11 +203,11 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
     setFormData({ ...formData, description });
   };
 
-  const handleReplyCommentClick = () => {
-    setReplyComments(!replyComments);
-  };
-  const handleShowRepliedComment = () => {
-    setShowRepliedComment(!showRepliedComment);
+  const handleReplyCommentClick = (commentId) => {
+    setReplyInputStates((prevStates) => ({
+      ...prevStates,
+      [commentId]: !prevStates[commentId],
+    }));
   };
 
   useEffect(() => {
@@ -172,7 +220,6 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
           });
 
           if (getCommentResult.data) {
-            console.log(getCommentResult.data);
             const reversedComments = [...getCommentResult.data].reverse();
             setPostComment(reversedComments);
           }
@@ -188,22 +235,54 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
       // Call fetchComments when the component mounts and whenever the count changes
       fetchComments();
     }
-  }, [count, commentClicked]);
+  }, [
+    count,
+    commentClicked,
+    electricianGetCommentPost,
+    postIdSentToBackEndGetCorrespondingComments,
+  ]);
 
-  const handleSaveOptionClick = async(postId)=>{
+  const handleSaveOptionClick = async (postId) => {
     try {
-      const result = await saveElectricianPost({postId,electricianId:electricianInfo._id}).unwrap()
-      if(result.message){
-        toast.success(result.message)
-      }else{
-        toast.error("Some thing went wrong")
+      const result = await saveElectricianPost({
+        postId,
+        electricianId: electricianInfo._id,
+      }).unwrap();
+      if (result.message) {
+        toast.success(result.message);
+      } else {
+        toast.error("Some thing went wrong");
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
-  
+  const handleReplyInputChange = (e) => {
+    const { name, value } = e.target;
+    setReplyFormData({ ...replyFormData, [name]: value });
+  };
+
+  const handleReplyComment = async (e, commentId) => {
+    e.preventDefault();
+    const { replyComment } = replyFormData;
+    try {
+      const electricianCommentId = electricianInfo._id;
+      const result = await replyCommentPost({
+        commentId,
+        replyComment,
+        electricianCommentId,
+      }).unwrap();
+      // Clear description after successful submission
+      setReplyFormData({ replyComment: "" });
+      setCommentClicked(true);
+      setCount((prevCount) => prevCount + 1);
+
+      toast.success("comment reply added");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -317,10 +396,15 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                 COMMENT
               </h2>
             </div>
-           
-            <div onClick={()=>{handleSaveOptionClick(posts._id)}} className="cursor-pointer flex gap-2">
+
+            <div
+              onClick={() => {
+                handleSaveOptionClick(posts._id);
+              }}
+              className="cursor-pointer flex gap-2"
+            >
               <CiSaveDown2 />
-              <h2 >SAVE</h2>
+              <h2>SAVE</h2>
             </div>
           </div>
 
@@ -384,7 +468,7 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                               {comments.electricianId.electricianName}
                             </p>
                             <span className="text-ascent-2 text-sm">
-                              {format(comments.updatedAt)}
+                              {format(comments.createdAt)}
                             </span>
                           </div>
                         </div>
@@ -393,71 +477,133 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                           <p className="text-ascent-2 text-justify">
                             {comments.comment}
                           </p>
-                          {/* <div className="mt-2 flex gap-6">
-                            <div
-                              className="text-xs cursor-pointer flex gap-2"
-                              onClick={handleLikeClick}
-                            >
-                              <AiFillLike />
-                              <p>LIKE </p>
+                          <div className="mt-2 flex gap-6">
+                            <div className="text-xs cursor-pointer flex gap-2">
+                              <div
+                                onClick={() =>
+                                  handleCommentLikeButtonClick(comments?._id)
+                                }
+                              >
+                                {comments.likes?.includes(
+                                  electricianInfo?._id.toString() +
+                                    electricianInfo.name
+                                ) ? (
+                                  <AiFillLike color="blue" />
+                                ) : (
+                                  <AiFillLike Like />
+                                )}
+                              </div>
+                              <div>
+                                <p
+                                  onClick={() =>
+                                    handleCommentLikeClick(comments._id)
+                                  }
+                                >
+                                  {comments?.likes?.length} Likes
+                                </p>
+                              </div>
                             </div>
+
                             <div className="text-xs cursor-pointer flex gap-2">
                               <BsReply />
-                              <p onClick={handleReplyCommentClick}>REPLY</p>
+                              <p
+                                onClick={() => {
+                                  // Hide displayed replies
+                                  setShowRepliesMap((prevMap) => ({
+                                    ...prevMap,
+                                    [comments._id]: false,
+                                  }));
+                                  // Toggle the visibility of the reply text area
+                                  setReplyInputStates((prevStates) => ({
+                                    ...prevStates,
+                                    [comments._id]: !prevStates[comments._id],
+                                  }));
+                                }}
+                              >
+                                REPLY
+                              </p>
                             </div>
-                          </div> */}
+                          </div>
 
-                          {replyComments && (
-                            <div className="flex items-center gap-4 border-t border-gray-300 pt-4">
-                              <img
-                                src={profilePhoto}
-                                className="w-9 h-9 rounded-full object-cover"
-                                alt="Profile"
-                              />
-                              <div className="flex-1">
-                                <textarea
-                                  placeholder="What's Your reply?"
-                                  name="description"
-                                  className="w-full px-4 h-10 border-b border-solid border-blue-500 focus:outline-none focus:border-b-blue-700 text-16 leading-7 text-black placeholder:text-gray-500 rounded-md cursor-pointer"
-                                  required
+                          {replyInputStates[comments._id] && (
+                            <form
+                              onSubmit={(e) => {
+                                e.preventDefault(); // Prevents the default form submission behavior
+                                handleReplyComment(e, comments._id);
+                              }}
+                            >
+                              <div className="flex items-center gap-4 border-t border-gray-300 pt-4">
+                                <img
+                                  src={profilePhoto}
+                                  className="w-9 h-9 rounded-full object-cover"
+                                  alt="Profile"
                                 />
+
+                                <div className="flex-1">
+                                  <textarea
+                                    placeholder="What's Your reply?"
+                                    name="replyComment"
+                                    onChange={handleReplyInputChange}
+                                    className="w-full px-4 h-10 border-b border-solid border-blue-500 focus:outline-none focus:border-b-blue-700 text-16 leading-7 text-black placeholder:text-gray-500 rounded-md cursor-pointer"
+                                    required
+                                  />
+                                </div>
+                                <button
+                                  type="submit"
+                                  className="px-4 py-1 bg-buttonColor text-white rounded-md hover:bg-blue-700 focus:outline-none"
+                                >
+                                  Submit
+                                </button>
+
+                                <h6
+                                  className="cursor-pointer"
+                                  onClick={() => {
+                                    // Toggle the visibility of displayed replies
+                                    setShowRepliesMap((prevMap) => ({
+                                      ...prevMap,
+                                      [comments._id]: !prevMap[comments._id],
+                                    }));
+                                    // Do not hide the reply text area when clicking "Show Replies"
+                                  }}
+                                >
+                                  (Show Replies)
+                                </h6>
                               </div>
-                              <button
-                                type="submit"
-                                className="px-4 py-1 bg-buttonColor text-white rounded-md hover:bg-blue-700 focus:outline-none"
-                              >
-                                Submit
-                              </button>
-                              <h6
-                                className="cursor-pointer"
-                                onClick={handleShowRepliedComment}
-                              >
-                                (Show Replies)
-                              </h6>
-                            </div>
+                            </form>
                           )}
                         </div>
 
-                        {showRepliedComment && (
-                          <div className="px-8">
-                            <div className="flex gap-3 ml-16 items-center m-1">
-                              <img
-                                src={profilePhoto}
-                                className="w-7 h-7 rounded-full object-cover"
-                                alt="Profile"
-                              />
-                              <div>
-                                <p className="font-medium text-sm text-ascent-1">
-                                  Robert R
-                                </p>
-                                <span className="text-xs">14-08-2023</span>
-                              </div>
-                            </div>
-                            <p className="ml-[104px] text-base text-justify">
-                              Lorem ipsum dolor sit amet consectetur adipisicing
-                              elit. Quam dicta debitis placeat quae facere
-                              voluptates!
-                            </p>
+                        {showRepliesMap[comments._id] && (
+                          <div>
+                            {comments.replies.length > 0 ? (
+                              comments.replies.map((repliedComment, index) => (
+                                <div key={index} className="px-8">
+                                  <div className="flex gap-3 ml-16 items-center m-1">
+                                    <img
+                                      src={profilePhoto}
+                                      className="w-7 h-7 rounded-full object-cover"
+                                      alt="Profile"
+                                    />
+                                    <div>
+                                      <p className="font-medium text-sm text-ascent-1">
+                                        {
+                                          repliedComment.electricianId
+                                            .electricianName
+                                        }
+                                      </p>
+                                      <span className="text-xs">
+                                        {format(repliedComment.created_At)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <p className="ml-[104px] text-base text-justify">
+                                    {repliedComment.comment}
+                                  </p>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="px-8">No replies found</div>
+                            )}
                           </div>
                         )}
                       </div>

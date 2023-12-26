@@ -17,7 +17,7 @@ import {
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import ClientHeader from "../../components/Header/clientHeader";
-import { useCreateChatMutation } from "../../slices/chatSlice";
+import { useCreateChatMutation } from "../../slices/chatApiSlice";
 import { useNavigate } from "react-router-dom";
 
 
