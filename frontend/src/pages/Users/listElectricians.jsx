@@ -6,16 +6,27 @@ import {
   Typography,
   Button,
 } from "@material-tailwind/react";
-import { GrLocation } from "react-icons/gr";
-import { useGetElectriciansDetailsMutation } from "../../slices/clientsApiSlice";
+import { IoIosCloseCircleOutline } from "react-icons/io";
+import {
+  useGetElectriciansDetailsMutation,
+  useElectricianReviewMutation,
+  useGetElectriciansReviewsMutation,
+} from "../../slices/clientsApiSlice";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ClientHeader from "../../components/Header/clientHeader";
 import { useCreateChatMutation } from "../../slices/chatApiSlice";
 import { useSelector } from "react-redux";
+import { MdOutlineRateReview } from "react-icons/md";
+import { MdOutlinePreview } from "react-icons/md";
+import { MdOutlineStarBorder } from "react-icons/md";
+import { IoMdStar } from "react-icons/io";
+import { toast } from "react-toastify";
 
 const ListElectricians = () => {
   const [loading, setLoading] = useState(true);
+  const [electriciansReviews, setElectriciansReviews] = useState([]);
+  const [count, setCount] = useState(0);
   const [electriciansList, setElectriciansList] = useState([]);
   const [sortByPrice, setSortByPrice] = useState("");
   const navigate = useNavigate();
@@ -42,6 +53,7 @@ const ListElectricians = () => {
   };
 
   const [getElectricians] = useGetElectriciansDetailsMutation();
+  const [getElectriciansReviews] = useGetElectriciansReviewsMutation();
   const [createChat] = useCreateChatMutation();
 
   useEffect(() => {
@@ -60,13 +72,13 @@ const ListElectricians = () => {
     };
 
     fetchData();
-  }, [getElectricians]);
+  }, [count, getElectricians]);
 
   const handleChatWith = async (electricianId) => {
     try {
-      let senderId = userInfo._id
-      let receiverId = electricianId
-      const result = await createChat({senderId, receiverId}).unwrap();
+      let senderId = userInfo._id;
+      let receiverId = electricianId;
+      const result = await createChat({ senderId, receiverId }).unwrap();
       if (result) {
         navigate("/clientElectricianChat");
       } else {
@@ -74,6 +86,83 @@ const ListElectricians = () => {
       }
     } catch (error) {
       console.error("Error creating chat:", error);
+    }
+  };
+
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [electricianId, setElectricianId] = useState("");
+
+  const openModal = (electricianId) => {
+    setModalOpen(true);
+    setElectricianId(electricianId);
+  };
+  const closeModal = (electricianId) => {
+    setModalOpen(false);
+    setElectricianId(electricianId);
+  };
+
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+
+  const [electricianReview] = useElectricianReviewMutation();
+  const handleStarClick = (selectedRating) => {
+    setRating(selectedRating);
+  };
+  const handleRatingSubmit = async () => {
+    try {
+      const response = await electricianReview({
+        electricianId,
+        rating,
+        review,
+        userId: userInfo._id,
+      }).unwrap();
+      if (response.message) {
+        setRating(0);
+        setReview("");
+        toast.success(response.message, {
+          position: toast.POSITION.TOP_RIGHT,
+          style: { marginTop: "50px" },
+        });
+        setCount((prevCount) => prevCount + 1);
+        closeModal();
+      }
+    } catch (error) {
+      setRating(0);
+      setReview("");
+
+      toast.error(error.data.error, {
+        position: toast.POSITION.TOP_RIGHT,
+        style: { marginTop: "50px" },
+      });
+      setCount((prevCount) => prevCount + 1);
+
+      closeModal();
+    }
+  };
+
+  const [isReadModalOpen, setReadModalOpen] = useState(false);
+
+  const openReadModal = (electricianId) => {
+    fetchData(electricianId);
+    setReadModalOpen(true);
+  };
+  const closeReadModal = () => {
+    setReadModalOpen(false);
+  };
+
+  const fetchData = async (electricianId) => {
+    try {
+      const result = await getElectriciansReviews({ id: electricianId });
+      if (result.data) {
+        setElectriciansReviews(result.data.electriciansReviews);
+        setLoading(false);
+      } else {
+        console.error("Data not available");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching Reviews:", error);
+      setLoading(false);
     }
   };
 
@@ -156,9 +245,9 @@ const ListElectricians = () => {
               </div>
             ) : electriciansList.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-12 md:gap-8 ">
-                {electriciansList.map((electrician) => (
+                {electriciansList.map((electrician, index) => (
                   <Card
-                    key={electrician.id}
+                    key={index}
                     className="p-3 mt-6 max-w-full md:max-w-[400px] lg:max-w-[300px]"
                   >
                     <CardHeader color="blue-gray" className="relative h-56">
@@ -169,29 +258,200 @@ const ListElectricians = () => {
                       />
                     </CardHeader>
                     <CardBody>
-                      <Typography
-                        variant="h5"
-                        color="blue-gray"
-                        className="flex justify-between items-center m-3"
-                      >
-                        <span>{electrician.electricianName}</span>
-                        <span>rating</span>
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        color="blue-gray"
-                        className="flex justify-between items-center m-3"
-                      >
-                        <span>
-                          ₹ {electrician.electricianWage.electricianWagePerDay}
-                        </span>
-                        <span className="flex gap-2 items-center first-letter">
-                          <GrLocation />
-                          {electrician.electricianLocation.electricianLocality},<br/>
-                          {electrician.electricianLocation.electricianState}
-                        </span>
-                      </Typography>
-                      <Typography className="text-justify">
+                      <table className="w-full">
+                        <tbody>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Electrician</td>
+                            <td className="py-2">
+                              {electrician.electricianName}
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Rating</td>
+                            <td className="py-2 flex items-center gap-4">
+                              <h4>{electrician.rating}/5</h4>
+
+                              <div className="relative">
+                                <div className="group">
+                                  <MdOutlineRateReview
+                                    className="cursor-pointer"
+                                    onClick={() => openModal(electrician._id)}
+                                  />
+                                  <div className="hidden group-hover:block absolute bg-gray-800 text-white p-2 rounded-md">
+                                    Write
+                                  </div>
+                                  {isModalOpen && (
+                                    <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+                                      {/* Modal Content */}
+                                      <div className="bg-white p-6 rounded-md shadow-lg flex flex-col items-center w-[400px]">
+                                        <div className="self-end mb-2">
+                                          <span
+                                            className="text-gray-500 cursor-pointer"
+                                            onClick={() =>
+                                              closeModal(electrician._id)
+                                            }
+                                          >
+                                            <IoIosCloseCircleOutline className="text-2xl" />
+                                          </span>
+                                        </div>
+                                        <h2 className="text-2xl mb-4">
+                                          Rate and Review
+                                        </h2>
+                                        <div className="flex items-center mb-4">
+                                          {[1, 2, 3, 4, 5].map((index) => (
+                                            <span
+                                              key={index}
+                                              className={`text-2xl cursor-pointer ${
+                                                index <= rating
+                                                  ? "text-yellow-500"
+                                                  : ""
+                                              }`}
+                                              onClick={() =>
+                                                handleStarClick(index)
+                                              }
+                                            >
+                                              {index <= rating ? (
+                                                <IoMdStar />
+                                              ) : (
+                                                <MdOutlineStarBorder />
+                                              )}
+                                            </span>
+                                          ))}
+                                        </div>
+                                        {/* Input field for review */}
+                                        <textarea
+                                          className="w-full border p-2 mb-4"
+                                          placeholder="Write your review"
+                                          value={review}
+                                          onChange={(e) =>
+                                            setReview(e.target.value)
+                                          }
+                                        ></textarea>
+                                        {/* Submit button */}
+                                        <button
+                                          className="bg-blue-500 text-white p-2 rounded-md mr-2"
+                                          onClick={() => handleRatingSubmit()}
+                                        >
+                                          Submit
+                                        </button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Read Button */}
+                              <div className="group relative">
+                                <MdOutlinePreview
+                                  className="cursor-pointer"
+                                  onClick={() => openReadModal(electrician._id)}
+                                />
+                                <div className="hidden group-hover:block absolute bg-gray-800 text-white p-2 rounded-md">
+                                  Read
+                                </div>
+                              </div>
+
+                              {/* Read Modal */}
+                              <div
+                                className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center z-50 ${
+                                  isReadModalOpen ? "" : "hidden"
+                                }`}
+                              >
+                                <div className="bg-white p-6 rounded-md shadow-lg flex flex-col items-center w-[700px] max-h-[80vh] overflow-hidden">
+                                  <div className="self-end mb-2">
+                                    <span
+                                      className="text-gray-500 cursor-pointer"
+                                      onClick={closeReadModal}
+                                    >
+                                      <IoIosCloseCircleOutline className="text-2xl" />
+                                    </span>
+                                  </div>
+                                  <h2 className="text-3xl font-bold mb-4 text-gray-800">
+                                    Reviews
+                                  </h2>
+                                  <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-gray-300 w-full">
+                                    <table className="min-w-full bg-white border border-gray-300">
+                                      <thead>
+                                        <tr className="bg-gray-100">
+                                          <th className="py-2 px-4 border-b text-center">
+                                            User
+                                          </th>
+                                          <th className="py-2 px-4 border-b text-center">
+                                            Rating
+                                          </th>
+                                          <th className="py-2 px-4 border-b text-center">
+                                            Review
+                                          </th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {electriciansReviews.map((reviews) => (
+                                          <tr
+                                            key={reviews._id}
+                                            className="hover:bg-gray-50"
+                                          >
+                                            <td className="py-2 px-4 border-b text-center">
+                                              {reviews.userId.userName}
+                                            </td>
+                                            <td className="py-2 px-4 border-b text-center">
+                                              {reviews.rating}
+                                            </td>
+                                            <td className="py-2 px-4 border-b  text-justify">
+                                              {reviews.review}
+                                            </td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                  <button
+                                    onClick={closeReadModal}
+                                    className="bg-blue-500 text-white px-4 my-5 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 transition duration-300 ease-in-out"
+                                  >
+                                    Close
+                                  </button>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Wage/Day</td>
+                            <td className="py-2">
+                              ₹{" "}
+                              {
+                                electrician.electricianWage
+                                  .electricianWagePerDay
+                              }
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Location</td>
+                            <td className="py-2">
+                              {
+                                electrician.electricianLocation
+                                  .electricianLocality
+                              }
+                              ,
+                              {electrician.electricianLocation.electricianState}
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Wage/Day</td>
+                            <td className="py-2">
+                              ₹{" "}
+                              {
+                                electrician.electricianWage
+                                  .electricianWagePerDay
+                              }
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <Typography className=" py-2 text-justify">
+                        <h3 className="text-descColor font-bold    ">
+                          Description
+                        </h3>
                         {electrician.electricianDescription}
                       </Typography>
                     </CardBody>
@@ -201,7 +461,6 @@ const ListElectricians = () => {
                           Schedule
                         </Link>
                       </Button>
-
                       <Button
                         onClick={() => {
                           handleChatWith(electrician._id); // Pass the event object (e) here

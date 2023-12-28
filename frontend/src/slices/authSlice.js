@@ -17,12 +17,24 @@ const initialState = {
       return null;
     }
   })(),
+  adminInfo: (() => {
+    try {
+      return JSON.parse(localStorage.getItem("adminInfo")) || null;
+    } catch (error) {
+      console.error("Error parsing electricianInfo from localStorage:", error);
+      return null;
+    }
+  })(),
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    setAdminCredentials: (state, action) => {
+      state.userInfo = action.payload;
+      localStorage.setItem("adminInfo", JSON.stringify(action.payload));
+    },
     setClientCredentials: (state, action) => {
       state.userInfo = action.payload;
       localStorage.setItem("userInfo", JSON.stringify(action.payload));
@@ -39,14 +51,20 @@ const authSlice = createSlice({
       state.electricianInfo = null;
       localStorage.removeItem("electricianInfo");
     },
+    adminLogout: (state, action) => {
+      state.adminInfo = null;
+      localStorage.removeItem("adminInfo");
+    },
   },
 });
 
 export const {
+  setAdminCredentials,
   setClientCredentials,
   setElectricianCredentials,
   userLogout,
   electricianLogout,
+  adminLogout
 } = authSlice.actions;
 export default authSlice.reducer;
 

@@ -1,7 +1,6 @@
 import aboutUs from "../assets/images/aboutUs.png";
 import client from "../assets/images/client.png";
 import electrician from "../assets/images/electrician.png";
-import shop from "../assets/images/shop.png";
 import whyChose from "../assets/images/whyChoose.png";
 import { Link } from "react-router-dom";
 import Header from "../components/Header/Header";
@@ -40,8 +39,8 @@ const Home = () => {
               <h2 className="headings text-left">About Us</h2>
               <p className="text__para text-justify">
                 At ElecroMingle, we believe in the power of connections and
-                knowledge sharing. We've built a digital haven for electricians,
-                users, and shopkeepers to come together and light up a world
+                knowledge sharing. We've built a digital haven for electricians and
+                users to come together and light up a world
                 filled with possibilities.
               </p>
               <h2 className="headings text-left pt-[20px]">Our Mission</h2>
@@ -49,7 +48,7 @@ const Home = () => {
                 Our mission is to empower the electrical industry by providing a
                 platform that fosters collaboration, innovation, and access to
                 professional services. Whether you're a seasoned electrician, a
-                DIY enthusiast, or a shopkeeper, we're here to help you connect,
+                DIY enthusiast, we're here to help you connect,
                 learn, and grow.
               </p>
             </div>
@@ -105,22 +104,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="px-5">
-              <div className="flex items-center justify-center">
-                <Link to="/login">
-                  <img className="w-[200px] h-[200px]" src={shop} alt="shop" />
-                </Link>
-              </div>
-              <div className="mt-[4px]">
-                <h2 className="text-[16px] leading-7 text-black font-[400] text-center">
-                  Shopkeepers can advertise their electrical products, provide
-                  information, and connect with users and electricians for sales
-                  and support.
-                  <br />
-                  <strong>*3 days free trial available (₹99/Month)</strong>
-                </h2>
-              </div>
-            </div>
+           
           </div>
         </div>
       </section>

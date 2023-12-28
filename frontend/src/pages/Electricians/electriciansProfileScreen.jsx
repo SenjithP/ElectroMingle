@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useUpdateElectricianProfileMutation } from "../../slices/electriciansApiSlice";
+import { useGetElecticianDetailsMutation, useUpdateElectricianProfileMutation } from "../../slices/electriciansApiSlice";
 import { useGetDataToUpdateElectricianProfileMutation } from "../../slices/electriciansApiSlice";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
@@ -29,6 +29,10 @@ const ElectriciansProfileScreen = () => {
   const [updateElectricianProfile] = useUpdateElectricianProfileMutation();
   const [getDataToUpdateElectricianProfile] =
     useGetDataToUpdateElectricianProfileMutation();
+
+  const [getElecticianDetails] = useGetElecticianDetailsMutation();
+  const [electicianDetails, setElecticianDetails] = useState([]);
+
 
   const isProfileImageValid = (fileName) => {
     const allowedExtensions = ["jpg", "jpeg", "png"];
@@ -105,11 +109,29 @@ const ElectriciansProfileScreen = () => {
     fetchData();
   }, [count, getDataToUpdateElectricianProfile]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const electricianDetail = await getElecticianDetails({
+          id: electricianInfo._id,
+        });
+        if (electricianDetail.data) {
+          setElecticianDetails(electricianDetail.data);
+        } else {
+          console.error("Error fetching data");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData(); // Call the async function
+  }, [count, getElecticianDetails]);
   return (
     <>
       <ElectricianHeader />
       <div className="flex">
-        <ElectricianSideBar count={count} />
+        <ElectricianSideBar electicianDetails={electicianDetails}   />
         <section className=" flex-1  xl:px-0">
           <div className="max-w-[750px]  mx-auto">
             <div className="rounded-lg m-3 md:p-10 md:shadow-md bg-white">

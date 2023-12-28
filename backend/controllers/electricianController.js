@@ -10,7 +10,8 @@ export const electricianSideScheduledWorks = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized - Missing JWT" });
     }
     const decodedToken = jwt.verify(token, process.env.ELECTRICIAN_JWT_SECRET);
-    const electricianId = decodedToken.userId;
+    const electricianId = decodedToken.electricianId;
+
     const scheduledWorks = await Booking.find({
       electricianId: electricianId,
     }).populate("electricianId");

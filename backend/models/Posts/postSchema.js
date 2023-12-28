@@ -7,11 +7,7 @@ const postSchema = new mongoose.Schema(
       ref: "Electrician",
       default: null,
     },
-    shopId: {
-      type: Schema.Types.ObjectId,
-      ref: "Shop",
-      default: null,
-    },
+   
     description: {
       type: String,
     },

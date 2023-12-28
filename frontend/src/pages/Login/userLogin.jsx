@@ -40,7 +40,7 @@ const UserLogin = () => {
         email,
         password,
       });
-
+console.log(res,"edsfceffv")
       if (res.data && res.data._id) {
 
           dispatch(setClientCredentials({ ...res.data }));
@@ -50,8 +50,8 @@ const UserLogin = () => {
             style: { marginTop: "50px" }, // Set marginTop to 300px);
           });
           navigate("/userHome");
-      } else {
-        toast.error("Login failed. Please check your credentials.", {
+      } else if(res.error) {
+        toast.error(res.error.data.message, {
           position: toast.POSITION.TOP_RIGHT, // You can adjust the position here
           style: { marginTop: "50px" }, // Set marginTop to 300px);
         });

@@ -3,7 +3,6 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
-  Typography,
   Button,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
@@ -12,18 +11,42 @@ import ElectricianHeader from "../../components/Header/electricianHeader.jsx";
 import {
   useChangeWorkStatusMutation,
   useGetClientScheduledWorksMutation,
+  useGetElecticianDetailsMutation,
 } from "../../slices/electriciansApiSlice.js";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
+import moment from "moment"
 
 const ElectricianSideScheduledWorksScreen = () => {
+  const { electricianInfo } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(true);
   const [scheduledWorks, setScheduledWorks] = useState([]);
   const [getClientScheduledWorks] = useGetClientScheduledWorksMutation();
+  const [getElecticianDetails] = useGetElecticianDetailsMutation();
   const [changeWorkStatus] = useChangeWorkStatusMutation();
   const [count, setCount] = useState(0);
+  const [electicianDetails, setElecticianDetails] = useState([]);
 
-  console.log(scheduledWorks.length);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const electricianDetail = await getElecticianDetails({
+          id: electricianInfo._id,
+        });
+        if (electricianDetail.data) {
+          setElecticianDetails(electricianDetail.data);
+        } else {
+          console.error("Error fetching data");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData(); // Call the async function
+  }, [count, getElecticianDetails]);
+
 
   const handleSubmitEvent = async (
     bookingId,
@@ -127,6 +150,7 @@ const ElectricianSideScheduledWorksScreen = () => {
     const fetchData = async () => {
       try {
         const result = await getClientScheduledWorks();
+        console.log(result,"result")
         if (result.data) {
           setScheduledWorks(result.data.scheduledWorks);
           setLoading(false);
@@ -145,7 +169,7 @@ const ElectricianSideScheduledWorksScreen = () => {
       <ElectricianHeader />
       <section className="max-h-halfscreen  flex flex-col md:flex-row">
         {/* First part - 25% on small screens, 50% on medium screens and above */}
-        <ElectricianSideBar />
+        <ElectricianSideBar electicianDetails={electicianDetails} />
         {/* Second part - 50% on small screens, 50% on medium screens and above */}
 
         <div className="md:w-1/10 lg:w-1/2 text-center m-5 max-h-screen overflow-x-hidden overflow-y-auto scrollbar-thin scrollbar-thumb-white-300 ">
@@ -175,50 +199,53 @@ const ElectricianSideScheduledWorksScreen = () => {
                         />
                       </CardHeader>
                       <CardBody>
-                        <Typography
-                          variant="h5"
-                          color="blue-gray"
-                          className="flex justify-between items-center m-3"
-                        >
-                          <span>Client Name</span>
-                          <span>{client.clientName}</span>
-                        </Typography>
-                        <Typography
-                          variant="h5"
-                          color="blue-gray"
-                          className="flex justify-between items-center m-3"
-                        >
-                          <span>Your Name</span>
-                          <span>{client.electricianId.electricianName}</span>
-                        </Typography>
-                        <Typography
-                          variant="h5"
-                          color="blue-gray"
-                          className="flex justify-between items-center m-3"
-                        >
-                          <span>Client Address</span>
-                          <span className="text-right">
-                            {client.clientAddress},<br />
+
+                      <table className="w-full">
+                        <tbody>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Client Name </td>
+                            <td className="py-2">
+                            {client.clientName}
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Your Name</td>
+                            <td className="py-2">{client.electricianId.electricianName}</td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Client Address</td>
+                            <td className="py-2">
+                              {client.clientAddress},<br />
                             {client.clientLocality},<br />
                             {client.clientState}
-                          </span>
-                        </Typography>
-                        <Typography
-                          variant="h5"
-                          color="blue-gray"
-                          className="flex justify-between items-center m-3"
-                        >
-                          <span>Client Contact</span>
-                          <span>{client.clientMobileNumber}</span>
-                        </Typography>
-                        <Typography
-                          variant="h5"
-                          color="blue-gray"
-                          className="flex justify-between items-center m-3"
-                        >
-                          <span>Work Date</span>
-                          <span>{client.clientWorkDate}</span>
-                        </Typography>
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Client Contact</td>
+                            <td className="py-2">
+                            {client.clientMobileNumber}
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Work Date</td>
+                            <td className="py-2">
+                            {client.clientWorkDate}
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Client Contact</td>
+                            <td className="py-2">
+                            {client.clientMobileNumber}
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Work Date</td>
+                            <td className="py-2">
+                            {moment(`${client.clientWorkDate}`).format("DD-MM-YYYY")}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                       </CardBody>
                       <CardFooter className="flex gap-7 justify-center pt-5">
                         {client.workCompletedStatus === "PaymentSuccess" && (

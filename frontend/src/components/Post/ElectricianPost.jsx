@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import profilePhoto from "../../assets/images/elecProfile.jpg";
 import { format } from "timeago.js";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import PropTypes from "prop-types";
 import {
   useElectricianCommentPostMutation,
   useElectricianGetCommentPostMutation,
@@ -11,20 +11,32 @@ import {
   useElectricianLikePostMutation,
   useSaveElectricianPostMutation,
   useReplyCommentPostMutation,
+  useDeleteReplyCommentMutation,
+  useDeleteCommentMutation,
+  useDeletePostMutation,
 } from "../../slices/postApiSlice";
 import { useSelector } from "react-redux";
 import { AiFillLike } from "react-icons/ai";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { GoReport } from "react-icons/go";
 import Swal from "sweetalert2";
 import { FaRegCommentDots } from "react-icons/fa";
 import { CiSaveDown2 } from "react-icons/ci";
 import InputEmoji from "react-input-emoji";
 import { toast } from "react-toastify";
 import { BsReply } from "react-icons/bs";
-import { ELECTRICIAN_POSTS_DIR_PATH } from "../../urls";
+import {
+  ELECTRICIAN_POSTS_DIR_PATH,
+  ELECTRICIAN_PROFILE_IMAGE_DIR_PATH,
+} from "../../urls";
 
-const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
+const ElectricianPost = ({
+  electricianPosts,
+  electicianDetails,
+  onDataFromChild,
+}) => {
   const [count, setCount] = useState(0);
-
+  console.log(electicianDetails, "elec");
   const sendDataToParent = (count) => {
     // Call the callback function provided by the parent
     onDataFromChild(count);
@@ -49,7 +61,6 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
   const [showRepliesMap, setShowRepliesMap] = useState({});
   const [postComment, setPostComment] = useState([]);
   const [replyInputStates, setReplyInputStates] = useState({});
-  console.log(postComment, "this is the post comment");
   const [
     postIdSentToBackEndGetCorrespondingComments,
     setPostIdSentToBackEndGetCorrespondingComments,
@@ -63,11 +74,12 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
   });
   const [commentClicked, setCommentClicked] = useState(false);
   const [commentPost] = useElectricianCommentPostMutation();
-  const [replyComments, setReplyComments] = useState(false);
-  const [showRepliedComment, setShowRepliedComment] = useState(false);
   const [electricianLikePost] = useElectricianLikePostMutation();
   const [electricianLikeComment] = useElectricianLikeCommentMutation();
   const [saveElectricianPost] = useSaveElectricianPostMutation();
+  const [deleteReplyComment] = useDeleteReplyCommentMutation();
+  const [deleteComment] = useDeleteCommentMutation();
+  const [deletePost] = useDeletePostMutation();
 
   const [electricianGetCommentPost] = useElectricianGetCommentPostMutation();
   const [replyCommentPost] = useReplyCommentPostMutation();
@@ -203,13 +215,6 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
     setFormData({ ...formData, description });
   };
 
-  const handleReplyCommentClick = (commentId) => {
-    setReplyInputStates((prevStates) => ({
-      ...prevStates,
-      [commentId]: !prevStates[commentId],
-    }));
-  };
-
   useEffect(() => {
     // Check if handleCommentClick has been triggered
     if (commentClicked) {
@@ -284,6 +289,56 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
     }
   };
 
+  const deletePostHandler = async (postId) => {
+    try {
+      const response = await deletePost({
+        postId,
+      }).unwrap();
+      if (response.message) {
+        toast.success("Post delete success");
+        setCount((prevCount) => prevCount + 1);
+      } else {
+        toast.error("Post not deleted! Please try again");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteCommentHandler = async (commentId) => {
+    try {
+      const response = await deleteComment({
+        commentId,
+      }).unwrap();
+      if (response.message) {
+        setCount((prevCount) => prevCount + 1);
+        setCommentClicked(true);
+        toast.success("Comment delete success");
+      } else {
+        toast.error("Comment not deleted! Please try again");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteRepliedCommentHandler = async (replyCommentId, commentId) => {
+    try {
+      const response = await deleteReplyComment({
+        replyCommentId,
+        commentId,
+      }).unwrap();
+      if (response.message) {
+        toast.success("Comment delete success");
+        setCommentClicked(true);
+      } else {
+        toast.error("Comment not deleted! Please try again");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       {electricianPosts.map((posts) => (
@@ -291,7 +346,10 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
           <div className="flex p-5 gap-5 items-start">
             <div className="flex-shrink-0">
               <img
-                src={profilePhoto}
+                src={
+                  ELECTRICIAN_PROFILE_IMAGE_DIR_PATH +
+                  posts.electricianId.electricianProfileImage
+                }
                 alt="Profile"
                 className="rounded-full w-16 h-16 object-cover"
               />
@@ -306,20 +364,28 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
               </h5>
             </div>
             <div className="ml-auto">
-              {posts.electricianId ? (
-                <div>
-                  <h4 className="text-lg font-semibold">Electrician</h4>
-                  <span className="flex gap-5">
-                    <h6 className="text-sm text-gray-500">Report</h6>
-                    <p className="text-sm text-gray-500">Delete</p>
-                  </span>
-                </div>
-              ) : (
-                <div>
-                  <h4 className="text-lg font-semibold">Shop</h4>
-                  <h6 className="text-sm text-gray-500">Report</h6>
-                </div>
-              )}
+              <div>
+                <span className="flex gap-5">
+                  {posts.electricianId._id === electricianInfo._id ? (
+                    <h6
+                      onClick={() => deletePostHandler(posts._id)}
+                      className="cursor-pointer relative group"
+                    >
+                      <RiDeleteBin6Line />
+                      <span className="absolute left-1/2 transform -translate-x-1/2 bg-black text-xs text-white px-2 py-1 hidden group-hover:block">
+                        Delete
+                      </span>
+                    </h6>
+                  ) : (
+                    <h6 className="cursor-pointer relative group">
+                      <GoReport />
+                      <span className="absolute left-1/2 transform -translate-x-1/2 bg-black text-xs text-white px-2 py-1 hidden group-hover:block">
+                        Report
+                      </span>
+                    </h6>
+                  )}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -393,7 +459,7 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                   handleCommentClick(posts._id);
                 }}
               >
-                COMMENT
+                COMMENT ({posts?.comments?.length})
               </h2>
             </div>
 
@@ -418,7 +484,10 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
               >
                 <div className="flex items-center gap-4 border-t border-gray-300 p-4">
                   <img
-                    src={profilePhoto}
+                    src={
+                      ELECTRICIAN_PROFILE_IMAGE_DIR_PATH +
+                      electicianDetails.data?.electricianProfileImage
+                    }
                     className="w-9 h-9 rounded-full object-cover"
                     alt="Profile"
                   />
@@ -459,7 +528,10 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                       <div key={index} className="w-full border-t-2 m-2 py-2">
                         <div className="flex gap-3 items-center mb-1">
                           <img
-                            src={profilePhoto}
+                            src={
+                              ELECTRICIAN_PROFILE_IMAGE_DIR_PATH +
+                              comments.electricianId.electricianProfileImage
+                            }
                             className="w-9 h-9 rounded-full object-cover"
                             alt="Profile"
                           />
@@ -471,6 +543,15 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                               {format(comments.createdAt)}
                             </span>
                           </div>
+                          {comments.electricianId._id ===
+                            electricianInfo._id && (
+                            <div
+                              onClick={() => deleteCommentHandler(comments._id)}
+                              className="ml-auto mr-11 cursor-pointer"
+                            >
+                              <RiDeleteBin6Line />
+                            </div>
+                          )}
                         </div>
 
                         <div className="ml-12 mr-8">
@@ -534,7 +615,11 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                             >
                               <div className="flex items-center gap-4 border-t border-gray-300 pt-4">
                                 <img
-                                  src={profilePhoto}
+                                  src={
+                                    ELECTRICIAN_PROFILE_IMAGE_DIR_PATH +
+                                    electicianDetails.data
+                                      ?.electricianProfileImage
+                                  }
                                   className="w-9 h-9 rounded-full object-cover"
                                   alt="Profile"
                                 />
@@ -543,6 +628,7 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                                   <textarea
                                     placeholder="What's Your reply?"
                                     name="replyComment"
+                                    value={replyFormData.replyComment}
                                     onChange={handleReplyInputChange}
                                     className="w-full px-4 h-10 border-b border-solid border-blue-500 focus:outline-none focus:border-b-blue-700 text-16 leading-7 text-black placeholder:text-gray-500 rounded-md cursor-pointer"
                                     required
@@ -566,7 +652,7 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                                     // Do not hide the reply text area when clicking "Show Replies"
                                   }}
                                 >
-                                  (Show Replies)
+                                  {`Show (${comments.replies.length}) Replies`}
                                 </h6>
                               </div>
                             </form>
@@ -580,7 +666,11 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                                 <div key={index} className="px-8">
                                   <div className="flex gap-3 ml-16 items-center m-1">
                                     <img
-                                      src={profilePhoto}
+                                      src={
+                                        ELECTRICIAN_PROFILE_IMAGE_DIR_PATH +
+                                        repliedComment.electricianId
+                                          .electricianProfileImage
+                                      }
                                       className="w-7 h-7 rounded-full object-cover"
                                       alt="Profile"
                                     />
@@ -595,10 +685,25 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
                                         {format(repliedComment.created_At)}
                                       </span>
                                     </div>
+                                    {repliedComment.electricianId._id ===
+                                      electricianInfo._id && (
+                                      <div
+                                        onClick={() =>
+                                          deleteRepliedCommentHandler(
+                                            repliedComment._id,
+                                            comments._id
+                                          )
+                                        }
+                                        className="ml-auto mr-11 cursor-pointer"
+                                      >
+                                        <RiDeleteBin6Line />
+                                      </div>
+                                    )}
                                   </div>
                                   <p className="ml-[104px] text-base text-justify">
                                     {repliedComment.comment}
                                   </p>
+                                  <div className="border-b py-1"></div>
                                 </div>
                               ))
                             ) : (
@@ -622,5 +727,9 @@ const ElectricianPost = ({ electricianPosts, onDataFromChild }) => {
     </>
   );
 };
-
+ElectricianPost.propTypes = {
+  electricianPosts: PropTypes.array.isRequired,
+  electicianDetails: PropTypes.object.isRequired,
+  onDataFromChild: PropTypes.func.isRequired,
+};
 export default ElectricianPost;

@@ -69,6 +69,27 @@ export const postApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
+    }),
+    deleteReplyComment:builder.mutation({
+      query: (data) => ({
+        url: `${POST_URL}/electrician/deleteReplyComment`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    deleteComment:builder.mutation({
+      query: (data) => ({
+        url: `${POST_URL}/electrician/deleteComment`,
+        method: "DELETE",
+        body: data,
+      }),
+    }),
+    deletePost:builder.mutation({
+      query: (data) => ({
+        url: `${POST_URL}/electrician/deletePost`,
+        method: "DELETE",
+        body: data,
+      }),
     })
   }),
 });
@@ -83,5 +104,8 @@ export const {
   useSaveElectricianPostMutation,
   useGetSavedPostsMutation,
   useGetMyPostsMutation,
-  useReplyCommentPostMutation
+  useReplyCommentPostMutation,
+  useDeleteReplyCommentMutation,
+  useDeleteCommentMutation,
+  useDeletePostMutation
 } = postApiSlice;

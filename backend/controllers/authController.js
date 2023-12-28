@@ -1,12 +1,7 @@
 import Electrician from "../models/electricianSchema.js";
-import Shop from "../models/shopSchema.js";
 import User from "../models/userSchema.js";
 import bcrypt from "bcrypt";
-import {
-  generateUserToken,
-  shopToken,
-  electricianToken,
-} from "../utils/generateToken.js";
+import { generateUserToken, generateElectricianToken } from "../utils/generateToken.js";
 
 export const register = async (req, res) => {
   try {
@@ -87,24 +82,6 @@ export const register = async (req, res) => {
         });
         await electrician.save();
       }
-    } else if (role === "shop") {
-      const existingShop = await Shop.findOne({ shopName: email });
-
-      if (existingShop) {
-        return res
-          .status(400)
-          .json({ message: "Shop with this email already exists." });
-      } else {
-        const salt = await bcrypt.genSalt(10);
-        const hashPassword = await bcrypt.hash(password, salt);
-        const shop = new Shop({
-          shopName: name,
-          shopEmail: email,
-          shopPassword: hashPassword,
-          shopMobileNumber: mobileNumber,
-        });
-        await shop.save();
-      }
     } else {
       return res.status(400).json({ message: "Invalid role provided." });
     }
@@ -125,7 +102,13 @@ export const authGoogle = async (req, res) => {
     if (user) {
       // User already exists, return false status
       const token = generateUserToken(res, user._id);
-      return res.status(200).json({success: true, token, _id: user._id, email: user.userEmail, name: user.userName});
+      return res.status(200).json({
+        success: true,
+        token,
+        _id: user._id,
+        email: user.userEmail,
+        name: user.userName,
+      });
     } else {
       const generatedPassword = Math.random().toString(36).slice(-8);
       const salt = await bcrypt.genSalt(10);
@@ -133,7 +116,7 @@ export const authGoogle = async (req, res) => {
 
       const newUser = new User({
         userName:
-          req.body.name.split(' ').join('').toLowerCase() +
+          req.body.name.split(" ").join("").toLowerCase() +
           Math.floor(Math.random() * 10000).toString(),
         userEmail: req.body.email,
         userPassword: hashPassword,
@@ -141,15 +124,22 @@ export const authGoogle = async (req, res) => {
 
       await newUser.save();
       const token = generateUserToken(res, newUser._id);
-      return res.status(201).json({ success: true, token, _id: newUser._id, email: newUser.userEmail, name: newUser.userName });
+      return res.status(201).json({
+        success: true,
+        token,
+        _id: newUser._id,
+        email: newUser.userEmail,
+        name: newUser.userName,
+      });
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: 'An error occurred during registration or login.' });
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred during registration or login.",
+    });
   }
 };
-
-
 
 export const electricianLogin = async (req, res) => {
   try {
@@ -175,7 +165,7 @@ export const electricianLogin = async (req, res) => {
     );
 
     if (verifiedPassword) {
-      electricianToken(res, electrician._id);
+      generateElectricianToken(res, electrician._id);
 
       return res.status(201).json({
         _id: electrician._id,
@@ -208,6 +198,11 @@ export const clientLogin = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Invalid Email or Password" });
     }
+    if (user.userIsBlocked === true) {
+      return res
+        .status(400)
+        .json({ message: "You Are Blocked From This Site! Contact Admin" });
+    }
 
     const verifiedPassword = await bcrypt.compare(password, user.userPassword);
 
@@ -234,7 +229,7 @@ export const userLogout = async (req, res) => {
       httpOnly: true,
       expires: new Date(0),
     });
-    res.status(200).json({ message: "Logout successful" });
+    res.status(200).json({ message: "Logout successful" }); 
   } catch (error) {
     console.log(error);
     return res
@@ -246,21 +241,6 @@ export const userLogout = async (req, res) => {
 export const electricianLogout = async (req, res) => {
   try {
     res.cookie("electricianjwt", "", {
-      httpOnly: true,
-      expires: new Date(0),
-    });
-    res.status(200).json({ message: "Logout successful" });
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred during Logout." });
-  }
-};
-
-export const shopLogout = async (req, res) => {
-  try {
-    res.cookie("shopjwt", "", {
       httpOnly: true,
       expires: new Date(0),
     });

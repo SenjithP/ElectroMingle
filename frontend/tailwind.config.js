@@ -22,7 +22,8 @@ export default {
         buttonColor: "#DF6951",
         normalTextColor: "#ffffff",
         backgroundGray: "#E7E7E7",
-        profileColor:'#f5fdff'
+        profileColor:'#f5fdff',
+        descColor:'#374151'
       },
      
       boxShadow:{

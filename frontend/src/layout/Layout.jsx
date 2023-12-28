@@ -7,13 +7,14 @@ const Layout = () => {
   const isElectricianHome = location.pathname.endsWith('/electricianHome');
   const isClientElectricianChat = location.pathname.endsWith('/clientElectricianChat');
   const meetingCall = location.pathname.includes('/Meeting/');
+  const adminLogin = location.pathname.includes('/admin')
 
   return (
     <>
       <main>
         <Routers />
       </main>
-      {!(isElectricianHome || isClientElectricianChat || meetingCall) && <Footer />}
+      {!(isElectricianHome || isClientElectricianChat || meetingCall ||adminLogin) && <Footer />}
     </>
   );
 };

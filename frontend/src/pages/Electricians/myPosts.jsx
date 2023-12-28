@@ -4,14 +4,35 @@ import { useSelector } from "react-redux";
 import ElectricianSideBar from "../../components/Electrician/electricianSideBar";
 import ElectricianPost from "../../components/Post/ElectricianPost";
 import { useGetMyPostsMutation } from "../../slices/postApiSlice";
+import { useGetElecticianDetailsMutation } from "../../slices/electriciansApiSlice";
 
 const MyPosts = () => {
   const { electricianInfo } = useSelector((state) => state.auth);
   const [getMyPosts] = useGetMyPostsMutation();
   const [electricianMyPosts, setElectricianMyPosts] = useState([]);
   const [receivedData, setReceivedData] = useState(null);
+  const [getElecticianDetails] = useGetElecticianDetailsMutation();
+  const [electicianDetails, setElecticianDetails] = useState([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const electricianDetail = await getElecticianDetails({
+          id: electricianInfo._id,
+        });
+        if (electricianDetail.data) {
+          setElecticianDetails(electricianDetail.data);
+        } else {
+          console.error("Error fetching data");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
+    fetchData(); // Call the async function
+  }, [ getElecticianDetails]);
+console.log(electicianDetails,"dfvevc")
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -39,12 +60,13 @@ const MyPosts = () => {
     <>
       <ElectricianHeader electricianName={electricianInfo?.electricianName} />
       <section className="max-h-halfscreen  flex flex-col md:flex-row">
-        <ElectricianSideBar />
+        <ElectricianSideBar electicianDetails={electicianDetails} />
         <div className="md:w-1/10 lg:w-1/2 text-center m-5 max-h-screen overflow-x-hidden overflow-y-auto scrollbar-thin scrollbar-thumb-white-300">
           {electricianMyPosts.length > 0 ? (
             <ElectricianPost
               electricianPosts={electricianMyPosts}
               onDataFromChild={handleDataFromChild}
+              electicianDetails={electicianDetails}
             />
           ) : (
           <div>No Post found</div>

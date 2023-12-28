@@ -1,7 +1,6 @@
 import warningUser from "../../assets/images/warningUser.png";
 // import client from "../assets/images/client.png";
 import electrician from "../../assets/images/electrician.png";
-import shop from "../../assets/images/shop.png";
 import basicUserElectronics from "../../assets/images/basicUserElectronics.png";
 import { Link } from "react-router-dom";
 import ClientHeader from "../../components/Header/clientHeader";
@@ -67,49 +66,32 @@ const userHome = () => {
 
       {/*========RoleBased Features========*/}
       <section className="features">
-        <div className="container">
-          <div className="lg:w-[450px] pt-5 mx-auto">
-            <h2 className="heading text-center">SCHEDULE YOUR TIME WITH </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 lg:gap-[30px] lg:mt-[10px]">
-            <div className="px-5">
-              <div className="flex items-center justify-center">
-                <Link to="/userElectricianList">
-                  <img
-                    className="w-[200px] h-[200px]"
-                    src={electrician}
-                    alt="electrician"
-                  />
-                </Link>
-              </div>
-              <div className="mt-[4px]">
-                <h2 className="text-[16px] leading-7 text-black font-[400] text-center">
-                  Discover and reserve your appointment or engage in a
-                  conversation with our seasoned electricians, handpicked from
-                  our lineup of highly skilled electrical experts, tailored to
-                  your specific needs.
-                </h2>
-              </div>
-            </div>
-
-            <div className="px-5">
-              <div className="flex items-center justify-center">
-                <Link to="/login">
-                  <img className="w-[200px] h-[200px]" src={shop} alt="shop" />
-                </Link>
-              </div>
-              <div className="mt-[4px]">
-                <h2 className="text-[16px] leading-7 text-black font-[400] text-center">
-                  Discover and engage in quick, informative chats with our
-                  seasoned electrical shopkeepers, allowing you to effortlessly
-                  explore the latest technology products tailored to your
-                  preferences from our curated roster of expert vendors.
-                </h2>
-              </div>
-            </div>
-          </div>
+  <div className="container">
+    <div className="lg:w-[450px] pt-5 mx-auto text-center">
+      <h2 className="heading">SCHEDULE YOUR TIME WITH </h2>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-5 lg:gap-[30px] lg:mt-[10px]">
+      <div className="px-5 flex flex-col items-center">
+        <div className="flex items-center justify-center">
+          <Link to="/userElectricianList">
+            <img
+              className="w-[200px] h-[200px]"
+              src={electrician}
+              alt="electrician"
+            />
+          </Link>
         </div>
-      </section>
+        <div className="max-w-[400px] text-justify mt-4">
+          <h2 className="text-[16px] leading-7 text-black font-[400]">
+            Discover and reserve your appointment or engage in a conversation
+            with our seasoned electricians, handpicked from our lineup of highly
+            skilled electrical experts, tailored to your specific needs.
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/*========whyChoose========*/}
       <section>

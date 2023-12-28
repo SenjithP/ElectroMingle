@@ -4,6 +4,7 @@ import Electrician from "../models/electricianSchema.js";
 import jwt from "jsonwebtoken";
 import Stripe from "stripe";
 import User from "../models/userSchema.js";
+import Review from "../models/clientElectricianReview.js";
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ export const getSingleElectriciansData = async (req, res) => {
 export const getScheduledWorksData = async (req, res) => {
   try {
     const token = req.cookies.userjwt;
+    console.log(token);
     if (!token) {
       return res.status(401).json({ message: "Unauthorized - Missing JWT" });
     }
@@ -106,5 +108,67 @@ export const updateWorkStatus = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");
+  }
+};
+
+export const clientElectricianReview = async (req, res) => {
+  try {
+    const { electricianId, rating, review, userId } = req.body;
+    const electrician = await Electrician.findById(electricianId);
+    if (!electrician) {
+      return res.status(404).json({ error: "Electrician not found" });
+    }
+    electrician.rating =
+      Math.round(((electrician.rating + rating) / 2) * 5) / 5;
+    await electrician.save();
+    const booking = await Booking.findOne({
+      clientId: userId,
+      electricianId,
+    });
+
+    if (!booking) {
+      return res
+        .status(403)
+        .json({ error: "You have no access to review this electrician" });
+    }
+
+    if (rating < 1) {
+      return res.status(500).json({ error: "Please Provide Rating" });
+    }
+
+    const newReview = await Review.create({
+      electricianId,
+      rating,
+      review,
+      userId,
+    });
+
+    res.status(201).json({ message: "Review added successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getElectriciansReviews = async (req, res) => {
+  try {
+    const electricianId = req.query.id;
+    if (!electricianId) {
+      return res.status(400).json({
+        message: "Some Error Occured",
+      });
+    }
+    const electriciansReviews = await Review.find({
+      electricianId: electricianId,
+    }).populate("userId");
+    console.log(electriciansReviews);
+    if (electriciansReviews && electriciansReviews.length > 0) {
+      res.status(200).json({ electriciansReviews: electriciansReviews });
+    } else {
+      return res.status(404).json({ message: "Reviews not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "An error occurred" });
   }
 };

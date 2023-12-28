@@ -4,13 +4,34 @@ import { useSelector } from "react-redux";
 import ElectricianSideBar from "../../components/Electrician/electricianSideBar";
 import ElectricianPost from "../../components/Post/ElectricianPost";
 import { useGetSavedPostsMutation } from "../../slices/postApiSlice";
+import { useGetElecticianDetailsMutation } from "../../slices/electriciansApiSlice";
 
 const SavedPosts = () => {
   const { electricianInfo } = useSelector((state) => state.auth);
   const [getSavedPosts] = useGetSavedPostsMutation();
   const [electricianSavedPosts, setElectricianSavedPosts] = useState([]);
   const [receivedData, setReceivedData] = useState(null);
+  const [electicianDetails, setElecticianDetails] = useState([]);
+  const [getElecticianDetails] = useGetElecticianDetailsMutation();
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const electricianDetail = await getElecticianDetails({
+          id: electricianInfo._id,
+        });
+        if (electricianDetail.data) {
+          setElecticianDetails(electricianDetail.data);
+        } else {
+          console.error("Error fetching data");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData(); // Call the async function
+  }, [getElecticianDetails]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +48,7 @@ const SavedPosts = () => {
     };
 
     fetchData();
-  }, [getSavedPosts,receivedData]);
+  }, [getSavedPosts, receivedData]);
 
   const handleDataFromChild = (count) => {
     // Handle the data received from the child component
@@ -35,20 +56,21 @@ const SavedPosts = () => {
     setReceivedData(count);
   };
 
-  console.log(electricianSavedPosts,"crfvebrvjn")
+  console.log(electricianSavedPosts, "crfvebrvjn");
   return (
     <>
       <ElectricianHeader electricianName={electricianInfo?.electricianName} />
       <section className="max-h-halfscreen  flex flex-col md:flex-row">
-        <ElectricianSideBar />
+        <ElectricianSideBar electicianDetails={electicianDetails} />
         <div className="md:w-1/10 lg:w-1/2 text-center m-5 max-h-screen overflow-x-hidden overflow-y-auto scrollbar-thin scrollbar-thumb-white-300">
           {electricianSavedPosts.length > 0 ? (
             <ElectricianPost
               electricianPosts={electricianSavedPosts}
+              electicianDetails={electicianDetails}
               onDataFromChild={handleDataFromChild}
             />
           ) : (
-          <div>No Post found</div>
+            <div>No Post found</div>
           )}
         </div>
         {/* 25% */}

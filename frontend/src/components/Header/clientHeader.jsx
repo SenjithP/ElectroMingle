@@ -26,18 +26,12 @@ const ClientHeader = () => {
       path: "/userElectricianList",
       display: "Electricians",
     },
-    {
-      path: "/shopKeepers",
-      display: "Shops",
-    },
+ 
     {
       path: "/clientScheduledWorks",
       display: "Scheduled",
     },
-    {
-      path: "/shopChat",
-      display: "ShopChats",
-    },
+   
     {
       path: "/clientElectricianChat",
       display: "ElectricianChats",

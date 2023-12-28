@@ -15,7 +15,7 @@ export const electricianBooking = async (req, res) => {
       workDescription,
     } = req.body;
 
-    if (
+    if ( 
       !clientId ||
       !electricianId ||
       !clientName ||
@@ -87,3 +87,5 @@ export const electricianBooking = async (req, res) => {
     res.status(400).json({ error: "Something went wrong...." });
   }
 };
+
+

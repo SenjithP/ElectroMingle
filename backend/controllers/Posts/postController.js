@@ -1,6 +1,5 @@
 import Post from "../../models/Posts/postSchema.js";
 import Electrician from "../../models/electricianSchema.js";
-import Shop from "../../models/shopSchema.js";
 import Comment from "../../models/Posts/commentSchema.js";
 import jwt from "jsonwebtoken";
 import SavePost from "../../models/Posts/savePostSchema.js";
@@ -14,7 +13,6 @@ export const createPost = async (req, res) => {
     }
 
     let electricianId = null;
-    let shopId = null;
 
     const token = req.cookies.electricianjwt;
     if (!token) {
@@ -22,7 +20,7 @@ export const createPost = async (req, res) => {
     }
 
     const decodedToken = jwt.verify(token, process.env.ELECTRICIAN_JWT_SECRET);
-    const electrician = decodedToken.userId;
+    const electrician = decodedToken.electricianId;
 
     if (electrician) {
       electricianId = electrician;
@@ -30,7 +28,6 @@ export const createPost = async (req, res) => {
 
     const post = await Post.create({
       electricianId,
-      shopId,
       description,
       fileName: images,
     });
@@ -74,7 +71,7 @@ export const likePost = async (req, res) => {
     const decodedToken = jwt.verify(token, process.env.ELECTRICIAN_JWT_SECRET);
 
     const postId = req.body.postId;
-    const electricianId = decodedToken.userId;
+    const electricianId = decodedToken.electricianId;
     const electricianDetails = await Electrician.findById(electricianId);
     const electricianName = electricianDetails.electricianName;
     if (!postId) {
@@ -140,9 +137,18 @@ export const commentPost = async (req, res) => {
 export const getCommentPost = async (req, res) => {
   try {
     const postId = req.query.id;
-    const postComments = await Comment.find({ postId: postId }).populate(
-      "electricianId"
-    );
+    const postComments = await Comment.find({ postId: postId }).populate([
+      {
+        path: "electricianId",
+      },
+      {
+        path: "replies",
+        populate: {
+          path: "electricianId",
+        },
+      },
+    ]);
+
     res.status(200).json(postComments);
   } catch (error) {
     console.log(error);
@@ -160,7 +166,7 @@ export const likePostComment = async (req, res) => {
     const decodedToken = jwt.verify(token, process.env.ELECTRICIAN_JWT_SECRET);
 
     const commentId = req.body.commentId;
-    const electricianId = decodedToken.userId;
+    const electricianId = decodedToken.electricianId;
     const electricianDetails = await Electrician.findById(electricianId);
     const electricianName = electricianDetails.electricianName;
     if (!commentId) {
@@ -207,7 +213,7 @@ export const replyPostComment = async (req, res) => {
   try {
     const commentInfo = await Comment.findById(commentId);
     commentInfo.replies.push({
-      electricianId:electricianCommentId,
+      electricianId: electricianCommentId,
       comment: replyComment,
     });
     commentInfo.save();
@@ -220,7 +226,7 @@ export const replyPostComment = async (req, res) => {
 
 export const savePost = async (req, res) => {
   try {
-    const { postId, electricianId, shopId } = req.body;
+    const { postId, electricianId } = req.body;
 
     // Check if electricianId and postId combination exists
     const existingSavePost = await SavePost.findOne({ electricianId, postId });
@@ -271,28 +277,8 @@ export const getSavedPosts = async (req, res) => {
       return res.status(200).json({ allElectriciansSavedPosts: reversedPosts });
     }
 
-    // If no electrician's saved posts found, check for shop's saved posts
-
-    // Validate that the required parameter 'id' is provided in the query for shops
-    const shopId = req.query.id;
-    if (!shopId) {
-      return res
-        .status(400)
-        .json({ message: "Shop ID is required in the query parameters." });
-    }
-
-    const allShopsSavedPosts = await SavePost.find({ shopId });
-
-    // If shops saved posts found, return them
-    if (allShopsSavedPosts && allShopsSavedPosts.length > 0) {
-      const reversedPosts = allShopsSavedPosts.reverse();
-
-      return res.status(200).json({ allShopsSavedPosts: reversedPosts });
-    }
-
-    // If no saved posts found for either electrician or shop
     return res.status(404).json({
-      message: "No saved posts found for the specified user or shop.",
+      message: "No saved posts found for the specified user.",
     });
   } catch (error) {
     console.error(error);
@@ -315,28 +301,92 @@ export const getMyPosts = async (req, res) => {
       electricianId: userId,
     }).populate("electricianId");
 
-    // Find shop's posts based on the provided user ID
-    const shopMyPost = await Post.find({ shopId: userId }).populate("shopId");
-
     // If electrician's saved posts found, return them
     if (electriciansMyPost && electriciansMyPost.length > 0) {
       const reversedPosts = electriciansMyPost.reverse();
       return res.status(200).json({ electriciansMyPost: reversedPosts });
     }
 
-    // If shops saved posts found, return them
-    if (shopMyPost && shopMyPost.length > 0) {
-      const reversedPosts = shopMyPost.reverse();
-
-      return res.status(200).json({ shopMyPost: reversedPosts });
-    }
-
-    // If no posts found for either electrician or shop
     return res
       .status(404)
       .json({ message: "No posts found for the provided user ID." });
   } catch (error) {
     console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const deletePost = async (req, res) => {
+  try {
+    const { postId } = req.body;
+    if (!postId) {
+      return res.status(400).json({ message: "Invalid postId" });
+    }
+    const post = await Post.findByIdAndDelete(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const commentRelated = await Comment.find({ postId });
+    if (commentRelated.length === 0) {
+      return res.status(200).json({ message: "Post deleted successfully" });
+    }
+    await Comment.deleteMany({ postId });
+    return res
+      .status(200)
+      .json({ message: "Post and related comments deleted successfully" });
+  } catch (error) {
+    console.error("Errors:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const deleteComment = async (req, res) => {
+  try {
+    const { commentId } = req.body;
+
+    // Delete the comment
+    const comment = await Comment.findByIdAndDelete(commentId);
+
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    // Find the post that contains the comment and remove the commentId from its replies array
+    const post = await Post.findOneAndUpdate(
+      { comments: commentId },
+      { $pull: { comments: commentId } },
+      { new: true }
+    );
+
+    if (!post) {
+      return res
+        .status(404)
+        .json({ message: "Post not found for the given comment" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Reply comment deleted successfully" });
+  } catch (error) {
+    console.error("Errors:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const deleteReplyComment = async (req, res) => {
+  try {
+    const { commentId, replyCommentId } = req.body;
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    comment.replies.pull({ _id: replyCommentId });
+    await comment.save();
+    return res
+      .status(200)
+      .json({ message: "Reply comment deleted successfully" });
+  } catch (error) {
+    console.error("Errors:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

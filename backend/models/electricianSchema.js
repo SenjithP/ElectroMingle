@@ -16,9 +16,13 @@ const electricianSchema = new mongoose.Schema(
       required: true,
     },
     electricianMobileNumber: {
-      type: Number, 
+      type: Number,
     },
     electricianIsVerified: {
+      type: Boolean,
+      default: false,
+    },
+    electricianIsBlocked: {
       type: Boolean,
       default: false,
     },
@@ -46,6 +50,10 @@ const electricianSchema = new mongoose.Schema(
       type: String,
       required: true,
       default: "No description provided", // Provide a default description here
+    },
+    rating: {
+      type: Number,
+      default: 0,
     },
     electricianWage: {
       electricianWagePerDay: {

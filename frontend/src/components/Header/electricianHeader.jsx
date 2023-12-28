@@ -28,10 +28,7 @@ const ElectricianHeader = () => {
       path: "/electricianSideScheduledWorks",
       display: "mySchedules",
     },
-    {
-      path: "/myShopChat",
-      display: "myShopChat",
-    },
+    
     {
       path: "/clientElectricianChat",
       display: "clientChat",

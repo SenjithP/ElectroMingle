@@ -7,11 +7,7 @@ const commentSchema = new mongoose.Schema(
       ref: "Electrician",
       default: null,
     },
-    shopId: {
-      type: Schema.Types.ObjectId,
-      ref: "Shop",    
-      default: null,
-    },
+   
     postId: {
       type: Schema.Types.ObjectId,
       ref: "Post",
@@ -27,11 +23,7 @@ const commentSchema = new mongoose.Schema(
           ref: "Electrician",
           default: null,
         },
-        shopId: {
-          type: Schema.Types.ObjectId,
-          ref: "Shop",
-          default: null,
-        },
+        
         comment: { type: String },
         created_At: { type: Date, default: Date.now },
         updated_At: { type: Date, default: Date.now },

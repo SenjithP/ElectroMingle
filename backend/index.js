@@ -10,6 +10,7 @@ import postRouter from "./routes/postRouter.js";
 import chatRouter from "./routes/chatRouter.js";
 import messageRouter from "./routes/messageRouter.js";
 import meetingRouter from "./routes/meetingRouter.js";
+import adminRouter from "./routes/adminRouter.js";
 
 dotenv.config();
 const app = express();
@@ -30,6 +31,7 @@ app.use("/api/electriciansPosts", postRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/message/", messageRouter);
 app.use("/api/meeting", meetingRouter);
+app.use("/api/admin",adminRouter)
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

@@ -3,7 +3,6 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
-  Typography,
   Button,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
@@ -13,6 +12,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useChangeWorkStatusMutation } from "../../slices/electriciansApiSlice";
+import moment from "moment";
 
 const ScheduledWorks = () => {
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,12 @@ const ScheduledWorks = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSubmitEvent = async (bookingId, status, showModal,cancelledBy) => {
+  const handleSubmitEvent = async (
+    bookingId,
+    status,
+    showModal,
+    cancelledBy
+  ) => {
     try {
       let reason;
 
@@ -69,7 +74,7 @@ const ScheduledWorks = () => {
           bookingId,
           status,
           reason,
-          cancelledBy
+          cancelledBy,
         }).unwrap();
         setCount((prevCount) => prevCount + 1);
         toast.success("Status Updated Successfully", {
@@ -138,7 +143,7 @@ const ScheduledWorks = () => {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-        setCount((prevCount) => prevCount + 1);
+          setCount((prevCount) => prevCount + 1);
           Swal.close();
         }
       });
@@ -151,6 +156,7 @@ const ScheduledWorks = () => {
     const fetchData = async () => {
       try {
         const result = await getScheduledWorks();
+        console.log(result, "cdscefvg");
         if (result.data) {
           setScheduledWorks(result.data.scheduledWorks);
           setLoading(false);
@@ -162,7 +168,9 @@ const ScheduledWorks = () => {
     };
 
     fetchData();
-  }, [getScheduledWorks,count]);
+  }, [getScheduledWorks, count]);
+
+  console.log(scheduledWorks, "fcdv");
 
   return (
     <>
@@ -211,50 +219,41 @@ const ScheduledWorks = () => {
                       />
                     </CardHeader>
                     <CardBody>
-                      <Typography
-                        variant="h5"
-                        color="blue-gray"
-                        className="flex justify-between items-center m-3"
-                      >
-                        <span>Electrician Name</span>
-                        <span>{electrician.electricianId.electricianName}</span>
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        color="blue-gray"
-                        className="flex justify-between items-center m-3"
-                      >
-                        <span>Your Name</span>
-                        <span>{electrician.clientName}</span>
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        color="blue-gray"
-                        className="flex justify-between items-center m-3"
-                      >
-                        <span>Your Address</span>
-                        <span className="text-right">
-                          {electrician.clientAddress},<br />
-                          {electrician.clientLocality},<br />
-                          {electrician.clientState}
-                        </span>
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        color="blue-gray"
-                        className="flex justify-between items-center m-3"
-                      >
-                        <span>Your Contact</span>
-                        <span>{electrician.clientMobileNumber}</span>
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        color="blue-gray"
-                        className="flex justify-between items-center m-3"
-                      >
-                        <span>Work Date</span>
-                        <span>{electrician.clientWorkDate}</span>
-                      </Typography>
+                      <table className="w-full">
+                        <tbody>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Electrician </td>
+                            <td className="py-2">
+                              {electrician.electricianId.electricianName}
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Your Name</td>
+                            <td className="py-2">{electrician.clientName}</td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Your Address</td>
+                            <td className="py-2">
+                              {" "}
+                              {electrician.clientAddress},<br />
+                              {electrician.clientLocality},<br />
+                              {electrician.clientState}
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Your Contact</td>
+                            <td className="py-2">
+                              {electrician.clientMobileNumber}
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-300">
+                            <td className="font-bold py-2">Work Date</td>
+                            <td className="py-2">
+                            {moment(`${electrician.clientWorkDate}`).format("DD-MM-YYYY")}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </CardBody>
                     <CardFooter className="flex gap-7 justify-center pt-5">
                       {electrician.workCompletedStatus === "PaymentSuccess" && (

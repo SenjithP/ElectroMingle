@@ -18,16 +18,9 @@ const userSchema = new mongoose.Schema(
     userMobileNumber: {
       type: Number,
     },
-    userIsVerified: {
+    userIsBlocked: {
       type: Boolean,
       default: false,
-    },
-    userEmailToken: {
-      type: String,
-      createdAt: { 
-        type: Date, 
-        default: Date.now(), 
-        expires: 3600 },
     },
   },
   {

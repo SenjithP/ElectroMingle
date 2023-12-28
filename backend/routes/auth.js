@@ -3,7 +3,6 @@ import {
   register,
   electricianLogout,
   userLogout,
-  shopLogout,
   clientLogin,
   electricianLogin,
   authGoogle
@@ -19,6 +18,5 @@ authRouter.post("/electrician_login", electricianLogin);
 
 authRouter.post("/electricianLogout", electricianLogout);
 authRouter.post("/userLogout", userLogout);
-authRouter.post("/shopLogout", shopLogout);
 
 export default authRouter;

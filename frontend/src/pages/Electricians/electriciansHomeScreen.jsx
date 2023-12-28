@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import profilePhoto from "../../assets/images/elecProfile.jpg";
 import imageUpload from "../../assets/images/uploadImage.png";
 import ElectricianSideBar from "../../components/Electrician/electricianSideBar.jsx";
 import ElectricianPost from "../../components/Post/ElectricianPost.jsx";
@@ -12,8 +11,34 @@ import {
 } from "../../slices/postApiSlice";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import { useGetElecticianDetailsMutation } from "../../slices/electriciansApiSlice.js";
+import { ELECTRICIAN_PROFILE_IMAGE_DIR_PATH } from "../../urls.jsx";
 
 const ElectriciansHomeScreen = () => {
+  const [count, setCount] = useState(0);
+ 
+  const [getElecticianDetails] = useGetElecticianDetailsMutation();
+  const [electicianDetails, setElecticianDetails] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const electricianDetail = await getElecticianDetails({
+          id: electricianInfo._id,
+        });
+        if (electricianDetail.data) {
+          setElecticianDetails(electricianDetail.data);
+        } else {
+          console.error("Error fetching data");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData(); // Call the async function
+  }, [count, getElecticianDetails]);
+
   const [receivedData, setReceivedData] = useState(null);
 
   const handleDataFromChild = (count) => {
@@ -24,7 +49,6 @@ const ElectriciansHomeScreen = () => {
 
   const { electricianInfo } = useSelector((state) => state.auth);
   const [electricianPosts, setElectricianPosts] = useState([]);
-  const [count, setCount] = useState(0);
 
   const [image, setImage] = useState(null);
   const [video, setVideo] = useState(null);
@@ -151,14 +175,14 @@ const ElectriciansHomeScreen = () => {
     fetchData();
   }, [count, receivedData]);
 
-  console.log(electricianPosts,"Fefvsv")
+  console.log(electricianPosts, "Fefvsv");
 
   return (
     <>
       <ElectricianHeader electricianName={electricianInfo?.electricianName} />
 
       <section className="max-h-halfscreen  flex flex-col md:flex-row">
-        <ElectricianSideBar />
+        <ElectricianSideBar electicianDetails={electicianDetails} />
 
         <div className="md:w-1/10 lg:w-1/2 text-center m-5 max-h-screen overflow-x-hidden overflow-y-auto scrollbar-thin scrollbar-thumb-white-300">
           <div className="flex items-center bg-white p-3 md:shadow-md rounded-lg">
@@ -166,7 +190,8 @@ const ElectriciansHomeScreen = () => {
               <form onSubmit={submitHandler} encType="multipart/form-data">
                 <div className="flex gap-3">
                   <img
-                    src={profilePhoto}
+                    src={ELECTRICIAN_PROFILE_IMAGE_DIR_PATH +
+                  electicianDetails.data?.electricianProfileImage}
                     alt="Profile Photo"
                     className="w-14 h-14 mt-2 justify-center align-middle object-cover rounded-full"
                   />
@@ -258,6 +283,7 @@ const ElectriciansHomeScreen = () => {
           {electricianPosts.length > 0 ? (
             <ElectricianPost
               electricianPosts={electricianPosts}
+              electicianDetails={electicianDetails}
               onDataFromChild={handleDataFromChild}
             />
           ) : (

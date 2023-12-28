@@ -3,6 +3,7 @@ import { useRef } from "react";
 import "./ChatBox.css";
 import { format } from "timeago.js";
 import InputEmoji from "react-input-emoji";
+import PropTypes from "prop-types";
 import {
   useAddMessagesMutation,
   useGetMessagesMutation,
@@ -164,6 +165,13 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
 </div>
     </>
   );
+};
+
+ChatBox.propTypes = {
+  chat: PropTypes.object, // You can specify the shape of the object if needed
+  currentUser: PropTypes.string.isRequired,
+  setSendMessage: PropTypes.func.isRequired,
+  receivedMessage: PropTypes.object, // You can specify the shape of the object if needed
 };
 
 export default ChatBox;

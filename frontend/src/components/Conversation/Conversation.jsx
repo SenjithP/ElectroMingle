@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useGetUserMutation } from "../../slices/chatApiSlice";
+import PropTypes from "prop-types";
 
 const Conversation = ({ data, currentUser, online }) => {
   const [getUser] = useGetUserMutation();
@@ -52,5 +53,12 @@ const Conversation = ({ data, currentUser, online }) => {
     </>
   );
 };
+
+Conversation.propTypes = {
+  data: PropTypes.object.isRequired, 
+  currentUser: PropTypes.string.isRequired,
+  online: PropTypes.bool.isRequired,
+};
+
 
 export default Conversation;

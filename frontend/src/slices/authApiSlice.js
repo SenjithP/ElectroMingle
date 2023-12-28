@@ -18,13 +18,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 body:data
             })
         }),
-        shopLogin:builder.mutation({
-            query:(data) => ({
-                url:`${USERS_URL}/shop_login`,
-                method:'POST',
-                body:data
-            })
-        }),
+        
         register:builder.mutation({
             query:(data) => ({
                 url:`${USERS_URL}/register`,
@@ -44,13 +38,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 method:"POST",
             })
         }),
-        shopLogout:builder.mutation({
-            query:()=>({ 
-                url:`${USERS_URL}/shopLogout`,
-                method:"POST",
-            })
-        })
+        
     })
 })
 
-export const {useClientLoginMutation,useElectricianLoginMutation,useShopLoginMutation, useRegisterMutation, useUserLogoutMutation,useElectricianLogoutMutation,useShopLogoutMutation} = usersApiSlice;
+export const {useClientLoginMutation,useElectricianLoginMutation, useRegisterMutation, useUserLogoutMutation,useElectricianLogoutMutation} = usersApiSlice;
