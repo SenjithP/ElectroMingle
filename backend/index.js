@@ -14,6 +14,9 @@ import adminRouter from "./routes/adminRouter.js";
 import cloudinary from "cloudinary";
 import http from "http";
 import { Server } from "socket.io";
+import path from "path";
+const currentWorkingDir = path.resolve();
+const parentDir = path.dirname(currentWorkingDir)
 
 cloudinary.config({
   cloud_name: process.env.CLOUDNAME,
@@ -91,6 +94,22 @@ app.use("/api/chat", chatRouter);
 app.use("/api/message/", messageRouter);
 app.use("/api/meeting", meetingRouter);
 app.use("/api/admin", adminRouter);
+
+const enviornment = "production"
+
+if (enviornment === 'production') {
+    const __dirname = path.resolve();
+    app.use(express.static(path.join(parentDir, '/frontend/dist')));
+
+    app.get('*', (req, res) =>
+      res.sendFile(path.resolve(parentDir, 'frontend', 'dist', 'index.html'))
+    );
+  } else {
+    app.get('/', (req, res) => {
+      res.send('API is running....');
+    });
+  }
+
  
 const port = process.env.PORT || 5000;
 
