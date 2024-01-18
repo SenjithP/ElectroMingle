@@ -75,8 +75,7 @@ const Chat = () => {
   }, [userInfo?._id, electricianInfo?._id]);
   
 
-    getChats();
-  }, [userInfo?._id, electricianInfo?._id]);
+
 
   // Connect to Socket.io
   useEffect(() => {
