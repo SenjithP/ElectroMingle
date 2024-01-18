@@ -107,7 +107,7 @@ const ListElectricians = () => {
       try {
         const result = await getElectricians();
 
-        if (result.data) {
+        if (result.data.electricianIsVerified) {
           setElectriciansList(result.data.electriciansList);
         }
       } catch (error) {
