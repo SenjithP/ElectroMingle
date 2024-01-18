@@ -284,234 +284,243 @@ const ListElectricians = () => {
         <div className="container mx-auto">
           <div className="flex flex-col items-center">
             {filteredWorker.length > 0 ? (
-              <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-12 md:gap-8 ">
-                {filteredWorker.map((electrician, index) => (
-                  <Card
-                    key={index}
-                    className="p-3 mt-6 max-w-full md:max-w-[400px] lg:max-w-[300px]"
-                  >
-                    <CardHeader color="blue-gray" className="relative h-56">
-                      <img
-                        className="rounded-lg w-full h-full object-cover"
-                        src={electrician.electricianProfileImage}
-                        alt="card-image"
-                      />
-                    </CardHeader>
-                    <CardBody>
-                      <table className="w-full">
-                        <tbody>
-                          <tr className="border-b border-gray-300">
-                            <td className="font-bold py-2">Electrician</td>
-                            <td className="py-2">
-                              {electrician.electricianName}
-                            </td>
-                          </tr>
-                          <tr className="border-b border-gray-300">
-                            <td className="font-bold py-2">Rating</td>
-                            <td className="py-2 flex items-center gap-4">
-                              <h4>{electrician.rating}/5</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-12 md:gap-8 ">
+                {filteredWorker.map((electrician, index) =>
+                  electrician.electricianIsVerified ? (
+                    <Card
+                      key={index}
+                      className="p-3 mt-6 max-w-full md:max-w-[400px] lg:max-w-[300px]"
+                    >
+                      <CardHeader color="blue-gray" className="relative h-56">
+                        <img
+                          className="rounded-lg w-full h-full object-cover"
+                          src={electrician.electricianProfileImage}
+                          alt="card-image"
+                        />
+                      </CardHeader>
+                      <CardBody>
+                        <table className="w-full">
+                          <tbody>
+                            <tr className="border-b border-gray-300">
+                              <td className="font-bold py-2">Electrician</td>
+                              <td className="py-2">
+                                {electrician.electricianName}
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-300">
+                              <td className="font-bold py-2">Rating</td>
+                              <td className="py-2 flex items-center gap-4">
+                                <h4>{electrician.rating}/5</h4>
 
-                              <div className="relative">
-                                <div className="group">
-                                  <MdOutlineRateReview
-                                    className="cursor-pointer"
-                                    onClick={() => openModal(electrician._id)}
-                                  />
-                                  <div className="hidden group-hover:block absolute bg-gray-800 text-white p-2 rounded-md">
-                                    Write
-                                  </div>
-                                  {isModalOpen && (
-                                    <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-                                      {/* Modal Content */}
-                                      <div className="bg-white p-6 rounded-md shadow-lg flex flex-col items-center w-[400px]">
-                                        <div className="self-end mb-2">
-                                          <span
-                                            className="text-gray-500 cursor-pointer"
-                                            onClick={() =>
-                                              closeModal(electrician._id)
-                                            }
-                                          >
-                                            <IoIosCloseCircleOutline className="text-2xl" />
-                                          </span>
-                                        </div>
-                                        <h2 className="text-2xl mb-4">
-                                          Rate and Review
-                                        </h2>
-                                        <div className="flex items-center mb-4">
-                                          {[1, 2, 3, 4, 5].map((index) => (
+                                <div className="relative">
+                                  <div className="group">
+                                    <MdOutlineRateReview
+                                      className="cursor-pointer"
+                                      onClick={() => openModal(electrician._id)}
+                                    />
+                                    <div className="hidden group-hover:block absolute bg-gray-800 text-white p-2 rounded-md">
+                                      Write
+                                    </div>
+                                    {isModalOpen && (
+                                      <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+                                        {/* Modal Content */}
+                                        <div className="bg-white p-6 rounded-md shadow-lg flex flex-col items-center w-[400px]">
+                                          <div className="self-end mb-2">
                                             <span
-                                              key={index}
-                                              className={`text-2xl cursor-pointer ${
-                                                index <= rating
-                                                  ? "text-yellow-500"
-                                                  : ""
-                                              }`}
+                                              className="text-gray-500 cursor-pointer"
                                               onClick={() =>
-                                                handleStarClick(index)
+                                                closeModal(electrician._id)
                                               }
                                             >
-                                              {index <= rating ? (
-                                                <IoMdStar />
-                                              ) : (
-                                                <MdOutlineStarBorder />
-                                              )}
+                                              <IoIosCloseCircleOutline className="text-2xl" />
                                             </span>
-                                          ))}
-                                        </div>
-                                        {/* Input field for review */}
-                                        <textarea
-                                          className="w-full border p-2 mb-4"
-                                          placeholder="Write your review"
-                                          value={review}
-                                          onChange={(e) =>
-                                            setReview(e.target.value)
-                                          }
-                                        ></textarea>
-                                        {/* Submit button */}
-                                        <button
-                                          className="bg-blue-500 text-white p-2 rounded-md mr-2"
-                                          onClick={() => handleRatingSubmit()}
-                                        >
-                                          Submit
-                                        </button>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-
-                              {/* Read Button */}
-                              <div className="group relative">
-                                <MdOutlinePreview
-                                  className="cursor-pointer"
-                                  onClick={() => openReadModal(electrician._id)}
-                                />
-                                <div className="hidden group-hover:block absolute bg-gray-800 text-white p-2 rounded-md">
-                                  Read
-                                </div>
-                              </div>
-
-                              {/* Read Modal */}
-                              <div
-                                className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center z-50 ${
-                                  isReadModalOpen ? "" : "hidden"
-                                }`}
-                              >
-                                <div className="bg-white p-6 rounded-md shadow-lg flex flex-col items-center w-[700px] max-h-[80vh] overflow-hidden">
-                                  <div className="self-end mb-2">
-                                    <span
-                                      className="text-gray-500 cursor-pointer"
-                                      onClick={closeReadModal}
-                                    >
-                                      <IoIosCloseCircleOutline className="text-2xl" />
-                                    </span>
-                                  </div>
-                                  <h2 className="text-3xl font-bold mb-4 text-gray-800">
-                                    Reviews
-                                  </h2>
-                                  <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-gray-300 w-full">
-                                    <table className="min-w-full bg-white border border-gray-300">
-                                      <thead>
-                                        <tr className="bg-gray-100">
-                                          <th className="py-2 px-4 border-b text-center">
-                                            User
-                                          </th>
-                                          <th className="py-2 px-4 border-b text-center">
-                                            Rating
-                                          </th>
-                                          <th className="py-2 px-4 border-b text-center">
-                                            Review
-                                          </th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {electriciansReviews.map((reviews) => (
-                                          <tr
-                                            key={reviews._id}
-                                            className="hover:bg-gray-50"
+                                          </div>
+                                          <h2 className="text-2xl mb-4">
+                                            Rate and Review
+                                          </h2>
+                                          <div className="flex items-center mb-4">
+                                            {[1, 2, 3, 4, 5].map((index) => (
+                                              <span
+                                                key={index}
+                                                className={`text-2xl cursor-pointer ${
+                                                  index <= rating
+                                                    ? "text-yellow-500"
+                                                    : ""
+                                                }`}
+                                                onClick={() =>
+                                                  handleStarClick(index)
+                                                }
+                                              >
+                                                {index <= rating ? (
+                                                  <IoMdStar />
+                                                ) : (
+                                                  <MdOutlineStarBorder />
+                                                )}
+                                              </span>
+                                            ))}
+                                          </div>
+                                          {/* Input field for review */}
+                                          <textarea
+                                            className="w-full border p-2 mb-4"
+                                            placeholder="Write your review"
+                                            value={review}
+                                            onChange={(e) =>
+                                              setReview(e.target.value)
+                                            }
+                                          ></textarea>
+                                          {/* Submit button */}
+                                          <button
+                                            className="bg-blue-500 text-white p-2 rounded-md mr-2"
+                                            onClick={() => handleRatingSubmit()}
                                           >
-                                            <td className="py-2 px-4 border-b text-center">
-                                              {reviews.userId.userName}
-                                            </td>
-                                            <td className="py-2 px-4 border-b text-center">
-                                              {reviews.rating}
-                                            </td>
-                                            <td className="py-2 px-4 border-b  text-justify">
-                                              {reviews.review}
-                                            </td>
-                                          </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
+                                            Submit
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
-                                  <button
-                                    onClick={closeReadModal}
-                                    className="bg-blue-500 text-white px-4 my-5 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 transition duration-300 ease-in-out"
-                                  >
-                                    Close
-                                  </button>
                                 </div>
-                              </div>
-                            </td>
-                          </tr>
 
-                          <tr className="border-b border-gray-300">
-                            <td className="font-bold py-2">Wage/Day</td>
-                            <td className="py-2">
-                              ₹{" "}
-                              {
-                                electrician.electricianWage
-                                  .electricianWagePerDay
-                              }
-                            </td>
-                          </tr>
-                          <tr className="border-b border-gray-300">
-                            <td className="font-bold py-2">Location</td>
-                            <td className="py-2">
-                              {
-                                electrician.electricianLocation
-                                  .electricianLocality
-                              }
-                              ,
-                              {electrician.electricianLocation.electricianState}
-                            </td>
-                          </tr>
-                          <tr className="border-b border-gray-300">
-                            <td className="font-bold py-2">Wage/Day</td>
-                            <td className="py-2">
-                              ₹{" "}
-                              {
-                                electrician.electricianWage
-                                  .electricianWagePerDay
-                              }
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <Typography className=" py-2 text-justify">
-                        <h3 className="text-descColor font-bold    ">
-                          Description
-                        </h3>
-                        {electrician.electricianDescription}
-                      </Typography>
-                    </CardBody>
-                    <CardFooter className="flex gap-7 justify-center pt-5">
-                      <Button className="bg-buttonColor pl-3 pr-3">
-                        <Link to={`/electricianBooking/${electrician._id}`}>
-                          Schedule
-                        </Link>
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          handleChatWith(electrician._id); // Pass the event object (e) here
-                        }}
-                        className="bg-buttonColor pl-3 pr-3"
-                      >
-                        Chat with
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
+                                {/* Read Button */}
+                                <div className="group relative">
+                                  <MdOutlinePreview
+                                    className="cursor-pointer"
+                                    onClick={() =>
+                                      openReadModal(electrician._id)
+                                    }
+                                  />
+                                  <div className="hidden group-hover:block absolute bg-gray-800 text-white p-2 rounded-md">
+                                    Read
+                                  </div>
+                                </div>
+
+                                {/* Read Modal */}
+                                <div
+                                  className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center z-50 ${
+                                    isReadModalOpen ? "" : "hidden"
+                                  }`}
+                                >
+                                  <div className="bg-white p-6 rounded-md shadow-lg flex flex-col items-center w-[700px] max-h-[80vh] overflow-hidden">
+                                    <div className="self-end mb-2">
+                                      <span
+                                        className="text-gray-500 cursor-pointer"
+                                        onClick={closeReadModal}
+                                      >
+                                        <IoIosCloseCircleOutline className="text-2xl" />
+                                      </span>
+                                    </div>
+                                    <h2 className="text-3xl font-bold mb-4 text-gray-800">
+                                      Reviews
+                                    </h2>
+                                    <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-gray-300 w-full">
+                                      <table className="min-w-full bg-white border border-gray-300">
+                                        <thead>
+                                          <tr className="bg-gray-100">
+                                            <th className="py-2 px-4 border-b text-center">
+                                              User
+                                            </th>
+                                            <th className="py-2 px-4 border-b text-center">
+                                              Rating
+                                            </th>
+                                            <th className="py-2 px-4 border-b text-center">
+                                              Review
+                                            </th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {electriciansReviews.map(
+                                            (reviews) => (
+                                              <tr
+                                                key={reviews._id}
+                                                className="hover:bg-gray-50"
+                                              >
+                                                <td className="py-2 px-4 border-b text-center">
+                                                  {reviews.userId.userName}
+                                                </td>
+                                                <td className="py-2 px-4 border-b text-center">
+                                                  {reviews.rating}
+                                                </td>
+                                                <td className="py-2 px-4 border-b  text-justify">
+                                                  {reviews.review}
+                                                </td>
+                                              </tr>
+                                            )
+                                          )}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                    <button
+                                      onClick={closeReadModal}
+                                      className="bg-blue-500 text-white px-4 my-5 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 transition duration-300 ease-in-out"
+                                    >
+                                      Close
+                                    </button>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+
+                            <tr className="border-b border-gray-300">
+                              <td className="font-bold py-2">Wage/Day</td>
+                              <td className="py-2">
+                                ₹{" "}
+                                {
+                                  electrician.electricianWage
+                                    .electricianWagePerDay
+                                }
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-300">
+                              <td className="font-bold py-2">Location</td>
+                              <td className="py-2">
+                                {
+                                  electrician.electricianLocation
+                                    .electricianLocality
+                                }
+                                ,
+                                {
+                                  electrician.electricianLocation
+                                    .electricianState
+                                }
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-300">
+                              <td className="font-bold py-2">Wage/Day</td>
+                              <td className="py-2">
+                                ₹{" "}
+                                {
+                                  electrician.electricianWage
+                                    .electricianWagePerDay
+                                }
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <Typography className="py-2 text-justify">
+                          <h3 className="text-descColor font-bold">
+                            Description
+                          </h3>
+                          {electrician.electricianDescription}
+                        </Typography>
+                      </CardBody>
+                      <CardFooter className="flex gap-7 justify-center pt-5">
+                        <Button className="bg-buttonColor pl-3 pr-3">
+                          <Link to={`/electricianBooking/${electrician._id}`}>
+                            Schedule
+                          </Link>
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            handleChatWith(electrician._id);
+                          }}
+                          className="bg-buttonColor pl-3 pr-3"
+                        >
+                          Chat with
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ) : null
+                )}
               </div>
             ) : (
               <div>No electricians found</div>

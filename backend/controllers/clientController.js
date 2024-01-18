@@ -13,7 +13,7 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 export const getElectriciansList = async (req, res) => {
   try {
     const electriciansList = await Electrician.find({});
-    if (electriciansList && electriciansList.length > 0 && electriciansList.electricianIsVerified) {
+    if (electriciansList && electriciansList.length > 0 ) {
 
       res.status(200).json({ electriciansList: electriciansList });
     } else {
