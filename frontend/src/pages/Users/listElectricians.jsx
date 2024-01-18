@@ -24,7 +24,6 @@ import { IoMdStar } from "react-icons/io";
 import { toast } from "react-toastify";
 
 const ListElectricians = () => {
-  const [loading, setLoading] = useState(true);
   const [electriciansReviews, setElectriciansReviews] = useState([]);
   const [count, setCount] = useState(0);
   const [electriciansList, setElectriciansList] = useState([]);
@@ -110,11 +109,9 @@ const ListElectricians = () => {
 
         if (result.data) {
           setElectriciansList(result.data.electriciansList);
-          setLoading(false);
         }
       } catch (error) {
         console.error("Error fetching electricians:", error);
-        setLoading(false);
       }
     };
 
@@ -202,14 +199,11 @@ const ListElectricians = () => {
       const result = await getElectriciansReviews({ id: electricianId });
       if (result.data) {
         setElectriciansReviews(result.data.electriciansReviews);
-        setLoading(false);
       } else {
         console.error("Data not available");
-        setLoading(false);
       }
     } catch (error) {
       console.error("Error fetching Reviews:", error);
-      setLoading(false);
     }
   };
 
@@ -290,12 +284,7 @@ const ListElectricians = () => {
       <section className="pb-8  flex items-center justify-center">
         <div className="container mx-auto">
           <div className="flex flex-col items-center">
-            {loading ? (
-              // Loading animation (you can replace this with your preferred loading component)
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-            ) : filteredWorker.length > 0 ? (
+            { filteredWorker.length > 0 ? (
               <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-12 md:gap-8 ">
                 {filteredWorker.map((electrician, index) => (
                   <Card
