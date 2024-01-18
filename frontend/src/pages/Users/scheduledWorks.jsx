@@ -103,7 +103,7 @@ const ScheduledWorks = () => {
   const handlePayment = async (amount, electricianName, id) => {
     try {
     
-      const res = await fetch("http://localhost:8080/api/client/makePayment", {
+      const res = await fetch("https://www.electromingle.senjith.shop/api/client/makePayment", {
         method: "post",
         headers: {
           "Content-Type": "application/json", // Set the Content-Type header
@@ -139,7 +139,7 @@ const ScheduledWorks = () => {
         showCancelButton: true,
         confirmButtonText: "OK",
         preConfirm: () => {
-          fetch("http://localhost:8080/api/client/updateWorkStatus", {
+          fetch("https://www.electromingle.senjith.shop/api/client/updateWorkStatus", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
