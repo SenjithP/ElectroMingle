@@ -25,9 +25,7 @@ import { CiSaveDown2 } from "react-icons/ci";
 import InputEmoji from "react-input-emoji";
 import { toast } from "react-toastify";
 import { BsReply } from "react-icons/bs";
-import {
-  ELECTRICIAN_POSTS_DIR_PATH,
-} from "../../urls";
+import { ELECTRICIAN_POSTS_DIR_PATH } from "../../urls";
 
 const ElectricianPost = ({
   electricianPosts,
@@ -35,7 +33,7 @@ const ElectricianPost = ({
   onDataFromChild,
 }) => {
   const [count, setCount] = useState(0);
-  
+
   const sendDataToParent = (count) => {
     // Call the callback function provided by the parent
     onDataFromChild(count);
@@ -338,7 +336,7 @@ const ElectricianPost = ({
     }
   };
 
-console.log(electricianPosts,"electricianPosts")
+  console.log(electricianPosts, "electricianPosts");
   return (
     <>
       {electricianPosts.map((posts) => (
@@ -425,7 +423,7 @@ console.log(electricianPosts,"electricianPosts")
                   </video>
                 ) : (
                   <img
-                    src="https://electromingle.senjith.shop/postImagesAndVideos/posts.fileName[0]"
+                    src={ELECTRICIAN_POSTS_DIR_PATH  + posts.fileName[0]}
                     alt="Smvs"
                   />
                 )}
@@ -481,10 +479,7 @@ console.log(electricianPosts,"electricianPosts")
               >
                 <div className="flex items-center gap-4 border-t border-gray-300 p-4">
                   <img
-                    src={
-                    
-                      electicianDetails.data?.electricianProfileImage
-                    }
+                    src={electicianDetails.data?.electricianProfileImage}
                     className="w-9 h-9 rounded-full object-cover"
                     alt="Profile"
                   />
@@ -525,9 +520,7 @@ console.log(electricianPosts,"electricianPosts")
                       <div key={index} className="w-full border-t-2 m-2 py-2">
                         <div className="flex gap-3 items-center mb-1">
                           <img
-                            src={
-                              comments.electricianId.electricianProfileImage
-                            }
+                            src={comments.electricianId.electricianProfileImage}
                             className="w-9 h-9 rounded-full object-cover"
                             alt="Profile"
                           />
