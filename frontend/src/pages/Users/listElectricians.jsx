@@ -200,7 +200,7 @@ const ListElectricians = () => {
   const fetchData = async (electricianId) => {
     try {
       const result = await getElectriciansReviews({ id: electricianId });
-      if (result.data) {
+      if (result.data.electricianProfileImage!=="default-image.jpg") {
         setElectriciansReviews(result.data.electriciansReviews);
         setLoading(false);
       } else {
