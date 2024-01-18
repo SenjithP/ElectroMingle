@@ -100,33 +100,7 @@ const ScheduledWorks = () => {
 
 
 
-  const handlePayment = async (amount, electricianName, id) => {
-    try {
-    
-      const res = await fetch("https://www.electromingle.senjith.shop/api/client/makePayment", {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json", // Set the Content-Type header
-        },
-        body: JSON.stringify({
-          amount: amount,
-          electricianName: electricianName,
-          id: id,
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          console.log("error");
-        }
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+  
 
   useEffect(() => {
     const hasSessionId = location.search.includes("session_id=");

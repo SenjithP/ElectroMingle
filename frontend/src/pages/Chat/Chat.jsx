@@ -43,17 +43,24 @@ const Chat = () => {
     const getChats = async () => {
       try {
         const userId = userInfo?._id || electricianInfo?._id;
-
+  
         if (userId) {
           const { data } = await userChats(userId);
-
-          // Convert updatedAt strings to Date objects and then sort in descending order
-          const sortedChats = data
-            .map((chat) => ({ ...chat, updatedAt: new Date(chat.updatedAt) }))
-            .sort((a, b) => b.updatedAt - a.updatedAt);
-
+  
+          // Sort chats based on the timestamp of the last message
+          const sortedChats = data.map((chat) => ({
+            ...chat,
+            lastMessageTimestamp: new Date(
+              chat.messages[chat.messages.length - 1]?.createdAt
+            ),
+          }));
+  
+          sortedChats.sort((a, b) =>
+            b.lastMessageTimestamp - a.lastMessageTimestamp
+          );
+  
           setChats(sortedChats, "chatData");
-
+  
           // Set the last chat as the default chat
           if (sortedChats.length > 0) {
             setCurrentChat(sortedChats[0]);
@@ -63,6 +70,10 @@ const Chat = () => {
         console.log(error);
       }
     };
+  
+    getChats();
+  }, [userInfo?._id, electricianInfo?._id]);
+  
 
     getChats();
   }, [userInfo?._id, electricianInfo?._id]);
