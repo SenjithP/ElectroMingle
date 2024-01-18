@@ -69,7 +69,7 @@ const Chat = () => {
 
   // Connect to Socket.io
   useEffect(() => {
-    socket.current = io("https://electromingle.senjith.shop");
+    socket.current = io("wss://www.electromingle.senjith.shop");
 
     const userId = userInfo?._id || electricianInfo?._id;
 

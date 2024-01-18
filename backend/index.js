@@ -29,7 +29,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://electromingle.senjith.shop",
+    origin: "http://localhost:3000",
   },
 });
 
