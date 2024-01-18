@@ -82,8 +82,8 @@ export const makePayment = async (req, res) => {
       ],
       mode: "payment",
       success_url:
-        "http://localhost:3000/clientScheduledWorks?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "http://localhost:3000/clientScheduledWorks",
+        "https://www.electromingle.senjith.shop/clientScheduledWorks?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://www.electromingle.senjith.shop/clientScheduledWorks",
     });
     idOfTheBookingToBeUpdated = req.body.id;
     res.send({ url: session.url });
