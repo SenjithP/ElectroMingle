@@ -108,7 +108,7 @@ if (enviornment === 'production') {
     app.get('/', (req, res) => {
       res.send('API is running....');
     });
-  }
+  }         
 
  
 const port = process.env.PORT || 5000;
