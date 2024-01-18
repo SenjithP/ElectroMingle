@@ -106,10 +106,7 @@ const ListElectricians = () => {
     const fetchData = async () => {
       try {
         const result = await getElectricians();
-console.log(result,"result getting ")
-        if (result.data.electriciansList.electricianIsVerified) {
-console.log("result getting reaching here  ")
-
+        if (result.data) {
           setElectriciansList(result.data.electriciansList);
         }
       } catch (error) {
@@ -286,7 +283,7 @@ console.log("result getting reaching here  ")
       <section className="pb-8  flex items-center justify-center">
         <div className="container mx-auto">
           <div className="flex flex-col items-center">
-            { filteredWorker.length > 0 ? (
+            {filteredWorker.length > 0 ? (
               <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-12 md:gap-8 ">
                 {filteredWorker.map((electrician, index) => (
                   <Card
