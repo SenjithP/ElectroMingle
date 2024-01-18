@@ -106,8 +106,10 @@ const ListElectricians = () => {
     const fetchData = async () => {
       try {
         const result = await getElectricians();
-
+console.log(result,"result getting ")
         if (result.data.electriciansList.electricianIsVerified) {
+console.log("result getting reaching here  ")
+
           setElectriciansList(result.data.electriciansList);
         }
       } catch (error) {
