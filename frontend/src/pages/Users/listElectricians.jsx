@@ -108,7 +108,7 @@ const ListElectricians = () => {
       try {
         const result = await getElectricians();
 
-        if (result.data.electricianProfileImage!=="default-image.jpg") {
+        if (result.data) {
           setElectriciansList(result.data.electriciansList);
           setLoading(false);
         }

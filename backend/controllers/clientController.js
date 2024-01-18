@@ -13,7 +13,8 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 export const getElectriciansList = async (req, res) => {
   try {
     const electriciansList = await Electrician.find({});
-    if (electriciansList && electriciansList.length > 0) {
+    if (electriciansList && electriciansList.length > 0 && electriciansList.electricianIsVerified) {
+
       res.status(200).json({ electriciansList: electriciansList });
     } else {
       return res.status(404).json({ message: "Electricians not found" });
@@ -26,6 +27,7 @@ export const getElectriciansList = async (req, res) => {
 
 export const getSingleElectriciansData = async (req, res) => {
   try {
+
     const electriciansList = await Electrician.find({ _id: req.query.id });
     if (electriciansList && electriciansList.length > 0) {
       res.status(200).json({ electriciansList: electriciansList });
