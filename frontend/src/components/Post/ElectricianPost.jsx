@@ -27,7 +27,6 @@ import { toast } from "react-toastify";
 import { BsReply } from "react-icons/bs";
 import {
   ELECTRICIAN_POSTS_DIR_PATH,
-  ELECTRICIAN_PROFILE_IMAGE_DIR_PATH,
 } from "../../urls";
 
 const ElectricianPost = ({
@@ -426,7 +425,7 @@ console.log(electricianPosts,"electricianPosts")
                   </video>
                 ) : (
                   <img
-                    src={ELECTRICIAN_POSTS_DIR_PATH + posts.fileName[0]}
+                    src="https://electromingle.senjith.shop/postImagesAndVideos/posts.fileName[0]"
                     alt="Smvs"
                   />
                 )}
