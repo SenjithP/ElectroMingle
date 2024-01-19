@@ -30,6 +30,9 @@ const ElectricianSideScheduledWorksScreen = () => {
   const [changeWorkStatus] = useChangeWorkStatusMutation();
   const [count, setCount] = useState(0);
   const [electicianDetails, setElecticianDetails] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(6);
+  const [electricianWorkDetails, setElectricianWorkDetails] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -156,6 +159,7 @@ const ElectricianSideScheduledWorksScreen = () => {
         const result = await getClientScheduledWorks();
         if (result.data) {
           setScheduledWorks(result.data.scheduledWorks);
+          setElectricianWorkDetails(result.data.scheduledWorks);
           setLoading(false);
         } else if (result.error) {
           setLoading(false);
@@ -167,7 +171,14 @@ const ElectricianSideScheduledWorksScreen = () => {
     };
 
     fetchData();
-  }, [getClientScheduledWorks, count]);
+  }, [getClientScheduledWorks,currentPage, count]);
+
+  const totalPages = Math.ceil(electricianWorkDetails.length / pageSize);
+  const visibleElectricianWorks = electricianWorkDetails.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   return (
     <>
       <ElectricianHeader electicianDetails={electicianDetails} />
@@ -190,7 +201,7 @@ const ElectricianSideScheduledWorksScreen = () => {
                 </div>
               ) : scheduledWorks.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-5 lg:gap-12 md:gap-8">
-                  {scheduledWorks.map(
+                  {visibleElectricianWorks.map(
                     (client) =>
                       client.workCompletedStatus !== "PaymentSuccess" &&
                       client.workCompletedStatus !== "RequestedPayment" && (
@@ -359,6 +370,55 @@ const ElectricianSideScheduledWorksScreen = () => {
                 </div>
               )}
             </div>
+            <div>
+            {totalPages > 1 && (
+              <nav
+                className="flex justify-center my-3"
+                aria-label="Page navigation example"
+              >
+                <ul className="inline-flex -space-x-px text-base h-10">
+                  <li>
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
+                      }
+                      className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-l-md hover:bg-blue-50 hover:text-blue-500"
+                    >
+                      Previous
+                    </button>
+                  </li>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <li key={page}>
+                        <button
+                          onClick={() => setCurrentPage(page)}
+                          className={`flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-500 ${
+                            page === currentPage
+                              ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-md hover:text-white"
+                              : ""
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      </li>
+                    )
+                  )}
+                  <li>
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prevPage) =>
+                          Math.min(prevPage + 1, totalPages)
+                        )
+                      }
+                      className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-blue-50 hover:text-blue-500"
+                    >
+                      Next
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            )}
+          </div>
           </div>
         </div>
         {/* Third part - 25% on small screens, 25% on medium screens and above */}

@@ -13,14 +13,18 @@ const CompletedWorks = () => {
   const [loading, setLoading] = useState(true);
   const [completedWorks, setCompletedWorks] = useState([]);
   const [getScheduledWorks] = useGetScheduledWorksMutation();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(6);
+  const [completedWorkDetails, setCompletedWorkDetails] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await getScheduledWorks();
-        console.log(result, "cdscefvg");
         if (result.data) {
           setCompletedWorks(result.data.scheduledWorks);
+          setCompletedWorkDetails(result.data.scheduledWorks);
+
           setLoading(false);
         }
       } catch (error) {
@@ -30,8 +34,13 @@ const CompletedWorks = () => {
     };
 
     fetchData();
-  }, [getScheduledWorks]);
+  }, [getScheduledWorks,currentPage]);
 
+  const totalPages = Math.ceil(completedWorkDetails.length / pageSize);
+  const visibleCompletedWorks = completedWorkDetails.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
   return (
     <>
       <ClientHeader />
@@ -63,7 +72,7 @@ const CompletedWorks = () => {
               </div>
             ) : completedWorks.length > 0 ? (
               <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-12 md:gap-8">
-                {completedWorks.map(
+                {visibleCompletedWorks.map(
                   (electrician) =>
                     electrician.workCompletedStatus === "PaymentSuccess" && (
                       <Card
@@ -129,6 +138,55 @@ const CompletedWorks = () => {
               </div>
             ) : (
               <div>No Completed Works found</div>
+            )}
+          </div>
+          <div>
+            {totalPages > 1 && (
+              <nav
+                className="flex justify-center my-3"
+                aria-label="Page navigation example"
+              >
+                <ul className="inline-flex -space-x-px text-base h-10">
+                  <li>
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
+                      }
+                      className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-l-md hover:bg-blue-50 hover:text-blue-500"
+                    >
+                      Previous
+                    </button>
+                  </li>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <li key={page}>
+                        <button
+                          onClick={() => setCurrentPage(page)}
+                          className={`flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-500 ${
+                            page === currentPage
+                              ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-md hover:text-white"
+                              : ""
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      </li>
+                    )
+                  )}
+                  <li>
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prevPage) =>
+                          Math.min(prevPage + 1, totalPages)
+                        )
+                      }
+                      className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-blue-50 hover:text-blue-500"
+                    >
+                      Next
+                    </button>
+                  </li>
+                </ul>
+              </nav>
             )}
           </div>
         </div>

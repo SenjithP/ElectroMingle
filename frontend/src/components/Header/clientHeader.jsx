@@ -38,11 +38,6 @@ const ClientHeader = () => {
     },
 
     {
-      path: "/clientElectricianChat",
-      display: "ElectricianChats",
-    },
-
-    {
       path: "/userLogout",
       display: "Logout",
     },

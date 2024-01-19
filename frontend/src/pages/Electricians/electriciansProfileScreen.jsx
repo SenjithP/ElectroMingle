@@ -78,7 +78,7 @@ const ElectriciansProfileScreen = () => {
 
     setFileToBase2(file);
   };
-
+const [count,setCount] = useState(0)
   const [formData, setFormData] = useState({
     electricianName: "",
     electricianEmail: "",
@@ -130,7 +130,7 @@ const ElectriciansProfileScreen = () => {
     };
 
     fetchData();
-  }, []);
+  }, [count]);
 
   const handleInputChange = (e) => {
     setFormData({
@@ -170,6 +170,7 @@ const ElectriciansProfileScreen = () => {
         profileImage,
         licenseImage,
       }).unwrap();
+      setCount((prevCount=>prevCount+1))
       toast.success("Successfully Updated Profile");
     } catch (error) {
       toast.error(error.data.message);
