@@ -44,6 +44,21 @@ export const clientApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    getClientDetail: builder.mutation({
+      query: (params) => ({
+        url: `${CLIENT_URL}/getClientDetail?id=${params.id}`,
+        method: "GET",
+      }),
+    }),
+    updateClientProfile:builder.mutation({
+      query: (data) =>({
+        url: `${CLIENT_URL}/updateClientProfile`,
+        method: "POST",
+        body: data,
+
+      })
+    }),
   }),
 });
 
@@ -53,5 +68,7 @@ export const {
   useElectricianBookingMutation,
   useGetScheduledWorksMutation,
   useElectricianReviewMutation,
-  useGetElectriciansReviewsMutation
+  useGetClientDetailMutation,
+  useGetElectriciansReviewsMutation,
+  useUpdateClientProfileMutation
 } = clientApiSlice;

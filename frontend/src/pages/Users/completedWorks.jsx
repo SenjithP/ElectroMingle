@@ -139,7 +139,7 @@ const CompletedWorks = () => {
             ) : (
               <div>No Completed Works found</div>
             )}
-          </div>
+          </div>  
           <div>
             {totalPages > 1 && (
               <nav

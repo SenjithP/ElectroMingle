@@ -101,8 +101,8 @@ export const register = async (req, res) => {
 export const sendOtp = async (req, res) => {
   try {
     const email = req.body.email;
-    if(!email){
-      return res.status(400).json({ error: "Provide Email", });
+    if (!email) {
+      return res.status(400).json({ error: "Provide Email" });
     }
     const otp = await sendVerifyMail(email);
     return res.status(200).json({ message: "OTP Send successful.", otp });
@@ -155,6 +155,58 @@ export const authGoogle = async (req, res) => {
       success: false,
       message: "An error occurred during registration or login.",
     });
+  }
+};
+
+
+export const clientForgotPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    if (!email || !newPassword) {
+      return res
+        .status(400)
+        .json({ message: "Both email and new password are required." });
+    }
+    const clientDetail = await User.findOne({
+      userEmail: email,
+    });
+    if (!clientDetail) {
+      return res.status(404).json({ message: "Client not found." });
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+    clientDetail.userPassword = hashPassword;
+    await clientDetail.save();
+    return res.status(200).json({ message: "Password changed successfully." });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "An error occurred." });
+  }
+};
+
+
+export const electricianForgotPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    if (!email || !newPassword) {
+      return res
+        .status(400)
+        .json({ message: "Both email and new password are required." });
+    }
+    const electricianDetail = await Electrician.findOne({
+      electricianEmail: email,
+    });
+    if (!electricianDetail) {
+      return res.status(404).json({ message: "Electrician not found." });
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+    electricianDetail.electricianPassword = hashPassword;
+    await electricianDetail.save();
+    return res.status(200).json({ message: "Password changed successfully." });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "An error occurred." });
   }
 };
 

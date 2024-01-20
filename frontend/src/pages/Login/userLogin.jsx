@@ -118,6 +118,12 @@ const UserLogin = () => {
                 <OAuth />
               </form>
               <p className="mt-5 text-black text-center">
+              Forgot Your Password?{" "}
+              <Link className="text-blue-500 font-medium ml-1" to={"/clientFP"}>
+                ClickHere
+              </Link>
+            </p>
+              <p className="mt-5 text-black text-center">
                 Don't have an account?{" "}
                 <Link
                   className="text-blue-500 font-medium ml-1"

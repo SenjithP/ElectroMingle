@@ -25,6 +25,9 @@ import AdminPrivateRoute from "../components/ProtectedRoutes/adminPrivateRoute";
 import CompletedWorks from "../pages/Users/completedWorks";
 import ElectriciansBooking from "../pages/Users/electricianBooking";
 import CompletedWorksElectricianSide from "../pages/Electricians/completedWorksElectricianSide";
+import ElectricianFP from "../pages/ForgotPassword/ElectricianFP";
+import ClientFP from "../pages/ForgotPassword/ClientFP";
+import ClientProfile from "../pages/Users/clientProfile";
 
 const Routers = () => {
   return (
@@ -34,6 +37,9 @@ const Routers = () => {
       <Route path="/admin_login" element={<AdminLogin />} />
       <Route path="/client_login" element={<UserLogin />} />
       <Route path="/electrician_login" element={<ElectricianLogin />} />
+      <Route path="/electricianFP" element={<ElectricianFP />} />
+      <Route path="/clientFP" element={<ClientFP />} />
+      <Route path="/clientProfile" element={<ClientProfile />} />
 
       <Route
         path="/userHome"
@@ -146,7 +152,7 @@ const Routers = () => {
         element={
           <ElectricianPrivateRoute>
             <MeetingCall />
-          </ElectricianPrivateRoute>    
+          </ElectricianPrivateRoute>
         }
       />
 

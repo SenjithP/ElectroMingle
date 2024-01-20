@@ -5,6 +5,8 @@ import {
   electricianLogout,
   userLogout,
   clientLogin,
+  electricianForgotPassword,
+  clientForgotPassword,
   electricianLogin,
   authGoogle
 } from "../controllers/authController.js";
@@ -20,6 +22,9 @@ authRouter.post("/sendOtp", sendOtp);
 sendOtp
 authRouter.post("/client_login", clientLogin);
 authRouter.post("/electrician_login", electricianLogin);
+
+authRouter.post("/electricianForgotPassword",electricianForgotPassword)
+authRouter.post("/clientForgotPassword",clientForgotPassword)
 
 authRouter.post("/electricianLogout",electricianVerifyToken, electricianLogout);
 authRouter.post("/userLogout",userVerifyToken, userLogout);

@@ -42,7 +42,7 @@ const ClientHeader = () => {
       display: "Logout",
     },
     {
-      path: "/userHome",
+      path: "/clientProfile",
       display: (
         <img style={{ width: "70px", height: "50px" }} src={logo} alt="logo" />
       ),
