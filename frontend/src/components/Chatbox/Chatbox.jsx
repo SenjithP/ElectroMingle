@@ -97,7 +97,7 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
         <div className="flex items-center gap-4">
           <div className="flex-shrink-0">
             <img
-              src="https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1351"
+              src={userData?.electricianDetails?.electricianProfileImage||"https://cdn1.iconfinder.com/data/icons/instagram-ui-colored/48/JD-17-512.png"}
               alt="Profile"
               className="w-12 h-12 rounded-full"
             />

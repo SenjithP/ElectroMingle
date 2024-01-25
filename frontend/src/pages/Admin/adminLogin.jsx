@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import admin from "../../assets/images/admin.png";
-import logo from "../../assets/images/logo.png";
-
 import { useDispatch, useSelector } from "react-redux";
 import { setAdminCredentials } from "../../slices/authSlice";
 import { toast } from "react-toastify";
@@ -41,8 +39,8 @@ const AdminLogin = () => {
       if (res.data && res.data._id) {
         dispatch(setAdminCredentials({ ...res.data }));
 
-        toast.success("Login Successful")
         navigate("/adminHome");
+        toast.success("Login Successful....")
       } else {
         toast.error("Login failed. Please check your credentials")
       }

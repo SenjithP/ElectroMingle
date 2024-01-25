@@ -18,8 +18,8 @@ import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import UpcomingWorks from "../../components/Electrician/upcomingWorks.jsx";
-import io from 'socket.io-client';
-const socket = io('https://electromingle.senjith.shop');
+import io from "socket.io-client";
+const socket = io("https://electromingle.senjith.shop");
 
 const ElectricianSideScheduledWorksScreen = () => {
   const { electricianInfo } = useSelector((state) => state.auth);
@@ -171,7 +171,7 @@ const ElectricianSideScheduledWorksScreen = () => {
     };
 
     fetchData();
-  }, [getClientScheduledWorks,currentPage, count]);
+  }, [getClientScheduledWorks, currentPage, count]);
 
   const totalPages = Math.ceil(electricianWorkDetails.length / pageSize);
   const visibleElectricianWorks = electricianWorkDetails.slice(
@@ -317,44 +317,45 @@ const ElectricianSideScheduledWorksScreen = () => {
                                         Accept
                                       </Button>
                                     )}
+                                    <div className="flex gap-3">
+                                      {client.workCompletedStatus ===
+                                        "Accepted" && (
+                                        <>
+                                          <Button className="bg-green-800 pl-3 pr-3" disabled>
+                                            Accepted
+                                          </Button>
+                                          <Button
+                                            onClick={() =>
+                                              handleSubmitEvent(
+                                                client._id,
+                                                "paid",
+                                                "payment"
+                                              )
+                                            }
+                                            className="bg-blue-800 pl-3 pr-3"
+                                          >
+                                            Payment
+                                          </Button>
+                                        </>
+                                      )}
 
-                                    {client.workCompletedStatus ===
-                                      "Accepted" && (
-                                      <>
-                                        <Button className="bg-green-800 pl-3 pr-3">
-                                          Accepted
-                                        </Button>
+                                      {client.workCompletedStatus !==
+                                        "PaymentSuccess" && (
                                         <Button
                                           onClick={() =>
                                             handleSubmitEvent(
                                               client._id,
-                                              "paid",
-                                              "payment"
+                                              "cancel",
+                                              "cancelling",
+                                              "Electrician"
                                             )
                                           }
-                                          className="bg-blue-800 pl-3 pr-3"
+                                          className="bg-buttonColor pl-3 pr-3"
                                         >
-                                          Payment
+                                          Cancel
                                         </Button>
-                                      </>
-                                    )}
-
-                                    {client.workCompletedStatus !==
-                                      "PaymentSuccess" && (
-                                      <Button
-                                        onClick={() =>
-                                          handleSubmitEvent(
-                                            client._id,
-                                            "cancel",
-                                            "cancelling",
-                                            "Electrician"
-                                          )
-                                        }
-                                        className="bg-buttonColor pl-3 pr-3"
-                                      >
-                                        Cancel
-                                      </Button>
-                                    )}
+                                      )}
+                                    </div>
                                   </>
                                 )}
                               </>
@@ -371,54 +372,56 @@ const ElectricianSideScheduledWorksScreen = () => {
               )}
             </div>
             <div>
-            {totalPages > 1 && (
-              <nav
-                className="flex justify-center my-3"
-                aria-label="Page navigation example"
-              >
-                <ul className="inline-flex -space-x-px text-base h-10">
-                  <li>
-                    <button
-                      onClick={() =>
-                        setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
-                      }
-                      className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-l-md hover:bg-blue-50 hover:text-blue-500"
-                    >
-                      Previous
-                    </button>
-                  </li>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <li key={page}>
-                        <button
-                          onClick={() => setCurrentPage(page)}
-                          className={`flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-500 ${
-                            page === currentPage
-                              ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-md hover:text-white"
-                              : ""
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      </li>
-                    )
-                  )}
-                  <li>
-                    <button
-                      onClick={() =>
-                        setCurrentPage((prevPage) =>
-                          Math.min(prevPage + 1, totalPages)
-                        )
-                      }
-                      className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-blue-50 hover:text-blue-500"
-                    >
-                      Next
-                    </button>
-                  </li>
-                </ul>
-              </nav>
-            )}
-          </div>
+              {totalPages > 1 && (
+                <nav
+                  className="flex justify-center my-3"
+                  aria-label="Page navigation example"
+                >
+                  <ul className="inline-flex -space-x-px text-base h-10">
+                    <li>
+                      <button
+                        onClick={() =>
+                          setCurrentPage((prevPage) =>
+                            Math.max(prevPage - 1, 1)
+                          )
+                        }
+                        className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-l-md hover:bg-blue-50 hover:text-blue-500"
+                      >
+                        Previous
+                      </button>
+                    </li>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <li key={page}>
+                          <button
+                            onClick={() => setCurrentPage(page)}
+                            className={`flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-500 ${
+                              page === currentPage
+                                ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-md hover:text-white"
+                                : ""
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        </li>
+                      )
+                    )}
+                    <li>
+                      <button
+                        onClick={() =>
+                          setCurrentPage((prevPage) =>
+                            Math.min(prevPage + 1, totalPages)
+                          )
+                        }
+                        className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-blue-50 hover:text-blue-500"
+                      >
+                        Next
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              )}
+            </div>
           </div>
         </div>
         {/* Third part - 25% on small screens, 25% on medium screens and above */}

@@ -32,8 +32,8 @@ const Conversation = ({ data, currentUser, online }) => {
         )}
         <img
           src={
-            userData?.profileImage ||
-            "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1351"
+            userData?.electricianDetails?.electricianProfileImage ||
+            "https://cdn1.iconfinder.com/data/icons/instagram-ui-colored/48/JD-17-512.png"
           }
           alt="Profile"
           className="followerImage w-12 h-12 md:w-16 md:h-16 rounded-full object-cover"

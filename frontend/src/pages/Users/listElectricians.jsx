@@ -286,7 +286,7 @@ const ListElectricians = () => {
             {filteredWorker.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-12 md:gap-8 ">
                 {filteredWorker.map((electrician, index) =>
-                  electrician.electricianIsVerified ? (
+                  electrician.electricianIsVerified && !electrician.electricianIsBlocked ? (
                     <Card
                       key={index}
                       className="p-3 mt-6 max-w-full md:max-w-[400px] lg:max-w-[300px]"

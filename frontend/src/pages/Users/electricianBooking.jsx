@@ -295,7 +295,7 @@ const ElectriciansBooking = () => {
                     >
                       <img
                         className="rounded-lg w-full h-full object-cover"
-                        src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
+                        src={electrician.electricianProfileImage}
                         alt="card-image"
                       />
                     </CardHeader>
@@ -306,7 +306,7 @@ const ElectriciansBooking = () => {
                         className="flex justify-between items-center m-3"
                       >
                         <span>{electrician.electricianName}</span>
-                        <span>Rating</span>
+                        <span>Rating: {electrician.rating}/5</span>
                       </Typography>
                       <Typography
                         variant="h5"

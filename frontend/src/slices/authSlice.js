@@ -32,7 +32,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setAdminCredentials: (state, action) => {
-      state.userInfo = action.payload;
+      state.adminInfo = action.payload;
       localStorage.setItem("adminInfo", JSON.stringify(action.payload));
     },
     setClientCredentials: (state, action) => {
