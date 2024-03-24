@@ -43,6 +43,7 @@ const MeetingCall = () => {
       <div className="bg-gradient-to-l from-blue-200 via-blue-100 to-blue-50 flex justify-center items-center min-h-screen">
   <div className="bg-white m-8 p-8 rounded shadow-md max-w-md text-center">
     <p className="text-xl font-semibold mb-4">ID: {id}</p>
+    <h1>Sorry for the inconvience! As per zegocloud account expired you are not able to access video call</h1>
     <button
       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none"
       onClick={handleCopyClick}
