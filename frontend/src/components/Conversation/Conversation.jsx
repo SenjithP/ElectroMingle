@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useGetUserMutation } from "../../slices/chatApiSlice";
 import PropTypes from "prop-types";

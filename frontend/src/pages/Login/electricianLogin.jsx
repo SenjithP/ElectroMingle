@@ -81,7 +81,10 @@ const ElectricianLogin = () => {
               <h3 className="text-black text-[24px] leading-9 font-bold mb-1">
                 Login <span className="text-buttonColor">Now</span>
               </h3>
-
+              <h6>
+                You can login using{" "}
+                <strong>Email:electrician@gmail.com, and password:Electrician@123</strong>
+              </h6>
               <form onSubmit={submitHandler}>
                 <div className="">
                   <input

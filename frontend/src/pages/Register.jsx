@@ -36,40 +36,39 @@ const Register = () => {
     e.preventDefault();
     const { name, email, role, password, mobileNumber } = formData;
     if (verified) {
-    try {
-      await register({
-        name,
-        email,
-        role,
-        password,
-        mobileNumber,
-      }).unwrap();
-     
+      try {
+        await register({
+          name,
+          email,
+          role,
+          password,
+          mobileNumber,
+        }).unwrap();
+
         toast.success("Successfully Registered", {
           position: toast.POSITION.TOP_RIGHT, // You can adjust the position here
           style: { marginTop: "50px" }, // Set marginTop to 300px);
         });
 
         navigate("/");
-      
-    } catch (error) {
-      toast.error(error.data.message, {
-        position: toast.POSITION.TOP_RIGHT, // You can adjust the position here
-        style: { marginTop: "50px" }, // Set marginTop to 300px);
-      });
-      console.log(error);
-    }
-  } else {
-        toast.error("Send OTP And Verify Your Email To Continue");
+      } catch (error) {
+        toast.error(error.data.message, {
+          position: toast.POSITION.TOP_RIGHT, // You can adjust the position here
+          style: { marginTop: "50px" }, // Set marginTop to 300px);
+        });
+        console.log(error);
       }
+    } else {
+      toast.error("Send OTP And Verify Your Email To Continue");
+    }
   };
 
   const sendOtp = async (e, email) => {
     e.preventDefault();
-    if(formData.email){
+    if (formData.email) {
       setOtpSendToEmail(true);
-    }else{
-      toast.error("Please Provide Email")
+    } else {
+      toast.error("Please Provide Email");
     }
     setDisabled(true);
     const res = await sendOtpToServer({
@@ -137,7 +136,7 @@ const Register = () => {
               <h3 className="text-black text-[24px] leading-9 font-bold mb-1">
                 Create your <span className="text-buttonColor">account</span>
               </h3>
-
+              
               <form onSubmit={submitHandler}>
                 <div className="">
                   <select
@@ -253,7 +252,6 @@ const Register = () => {
                 </div>
                 <OAuth />
               </form>
-             
             </div>
           </div>
         </div>
