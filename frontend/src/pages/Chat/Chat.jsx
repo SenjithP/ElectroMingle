@@ -90,7 +90,7 @@ const Chat = () => {
   }, [sendMessage]);
 
   // Get the message from socket server
-  useEffect(() => {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ` ````` ` `
+  useEffect(() => {
     socket.current.on("recieve-message", (data) => {
       console.log(data);
       setReceivedMessage(data);
@@ -111,43 +111,43 @@ const Chat = () => {
 
   return (
     <div className="grid grid-cols-1  sm:grid-cols-5 mr-2 gap-2">
-  {/* Left Side */}
-  <div className="sm:col-span-1  m-4">
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col bg-gray-100 rounded p-4 overflow-auto h-auto min-h-[95vh]">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Chats</h2>
+      {/* Left Side */}
+      <div className="sm:col-span-1  m-4">
         <div className="flex flex-col gap-4">
-          {chats.map((chat) => (
-            <div
-              key={chat.id}
-              onClick={() => {
-                setCurrentChat(chat);
-              }}
-              className="hover:bg-gray-200 cursor-pointer rounded p-2 transition-colors duration-300 ease-in-out"
-            >
-              <Conversation
-                data={chat}
-                currentUser={userInfo?._id || electricianInfo?._id}
-                online={checkOnlineStatus(chat)}
-              />
+          <div className="flex flex-col bg-gray-100 rounded p-4 overflow-auto h-auto min-h-[95vh]">
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Chats</h2>
+            <div className="flex flex-col gap-4">
+              {chats.map((chat) => (
+                <div
+                  key={chat.id}
+                  onClick={() => {
+                    setCurrentChat(chat);
+                  }}
+                  className="hover:bg-gray-200 cursor-pointer rounded p-2 transition-colors duration-300 ease-in-out"
+                >
+                  <Conversation
+                    data={chat}
+                    currentUser={userInfo?._id || electricianInfo?._id}
+                    online={checkOnlineStatus(chat)}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  {/* Right Side */}
-  <div className="sm:col-span-4 flex flex-col gap-4">
-    <div className="self-end">{/* NavIcons */}</div>
-    <ChatBox
-      chat={currentChat}
-      currentUser={userInfo?._id || electricianInfo?._id}
-      setSendMessage={setSendMessage}
-      receivedMessage={receivedMessage}
-    />
-  </div>
-</div>
+      {/* Right Side */}
+      <div className="sm:col-span-4 flex flex-col gap-4">
+        <div className="self-end">{/* NavIcons */}</div>
+        <ChatBox
+          chat={currentChat}
+          currentUser={userInfo?._id || electricianInfo?._id}
+          setSendMessage={setSendMessage}
+          receivedMessage={receivedMessage}
+        />
+      </div>
+    </div>
   );
 };
 
