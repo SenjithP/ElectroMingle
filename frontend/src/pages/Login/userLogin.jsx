@@ -135,6 +135,12 @@ const UserLogin = () => {
                   Register
                 </Link>
               </p>
+              <p className="mt-5 text-black text-center">
+              Login As Admin{" "}
+              <Link className="text-blue-500 font-medium ml-1" to={"/admin_login"}>
+                ClickHere
+              </Link>
+            </p>
             </div>
           </div>
         </div>

@@ -136,7 +136,9 @@ const Register = () => {
               <h3 className="text-black text-[24px] leading-9 font-bold mb-1">
                 Create your <span className="text-buttonColor">account</span>
               </h3>
-              
+              <h6>
+               <strong>Demo login details provided in Login Page</strong> 
+              </h6>
               <form onSubmit={submitHandler}>
                 <div className="">
                   <select

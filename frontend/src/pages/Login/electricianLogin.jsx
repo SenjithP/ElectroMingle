@@ -83,7 +83,9 @@ const ElectricianLogin = () => {
               </h3>
               <h6>
                 You can login using{" "}
-                <strong>Email:electrician@gmail.com, and password:Electrician@123</strong>
+                <strong>
+                  Email:electrician@gmail.com, and password:Electrician@123
+                </strong>
               </h6>
               <form onSubmit={submitHandler}>
                 <div className="">
@@ -133,6 +135,15 @@ const ElectricianLogin = () => {
                   to={"/register"}
                 >
                   Register
+                </Link>
+              </p>
+              <p className="mt-5 text-black text-center">
+                Login As Admin{" "}
+                <Link
+                  className="text-blue-500 font-medium ml-1"
+                  to={"/admin_login"}
+                >
+                  ClickHere
                 </Link>
               </p>
             </div>
