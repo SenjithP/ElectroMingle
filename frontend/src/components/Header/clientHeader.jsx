@@ -7,7 +7,7 @@ import { useUserLogoutMutation } from "../../slices/authApiSlice";
 import { userLogout } from "../../slices/authSlice";
 import { toast } from "react-toastify";
 import io from "socket.io-client";
-const socket = io("https://electromingle.senjith.shop");
+const socket = io("https://www.electromingle.senjith.shop");
 
 const ClientHeader = () => {
   const { userInfo } = useSelector((state) => state.auth);

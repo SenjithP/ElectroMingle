@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import UpcomingWorks from "../../components/Electrician/upcomingWorks.jsx";
 import io from "socket.io-client";
-const socket = io("https://electromingle.senjith.shop");
+const socket = io("https://www.electromingle.senjith.shop");
 
 const ElectricianSideScheduledWorksScreen = () => {
   const { electricianInfo } = useSelector((state) => state.auth);

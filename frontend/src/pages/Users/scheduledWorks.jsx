@@ -14,7 +14,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useChangeWorkStatusMutation } from "../../slices/electriciansApiSlice";
 import moment from "moment";
 import io from "socket.io-client";
-const socket = io("https://electromingle.senjith.shop");
+const socket = io("https://www.electromingle.senjith.shop");
 
 const ScheduledWorks = () => {
   const [loading, setLoading] = useState(true);

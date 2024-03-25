@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 import { MdNotifications } from "react-icons/md";
 import io from "socket.io-client";
-const socket = io("https://electromingle.senjith.shop");
+const socket = io("https://www.electromingle.senjith.shop");
 
 const UpcomingWorks = () => {
   const [count, setCount] = useState(0);
